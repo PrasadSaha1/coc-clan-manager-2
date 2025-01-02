@@ -109,7 +109,6 @@ def clan_search(request):
         if search_type == "clan":
             old_tag = clean_tag(request.POST.get("clan_tag"))
             try:
-                # raise ValueError(f"Invalid search type: {find_clan_with_tag(old_tag)}")
                 clan_name, clan_tag, clan_type, clan_description, clan_members, clan_points = find_clan_with_tag(old_tag, ["name", "tag", "type", "description", "members", "clanPoints"])
                 clan_badge = get_clan_badge(old_tag)
                 if request.user.is_authenticated:
@@ -117,7 +116,7 @@ def clan_search(request):
                         in_database = True
                     else:
                         in_database = False
-            except IndexError:
+            except KeyError:
                 return render(request, "main/clan_search.html", {"error": "clan"})
             return render(request, "main/clan_search.html", {"clan_name": clan_name, "clan_tag": clan_tag, "clan_type": clan_type,
                         "clan_description": clan_description, "clan_members": clan_members, "clan_points": clan_points, "clan_badge": clan_badge, "saved": in_database})
@@ -275,8 +274,7 @@ def view_player(request, player_tag):
     is_saved = "not_logged_in"
     change = None
     player = get_all_player_data(clean_tag(player_tag))
-    is_being_tracked = True
-   # is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
+    is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
     if request.user.is_authenticated:
         saved_player_count = SavedPlayer.objects.filter(user=request.user).count()
         if SavedPlayer.objects.filter(user=request.user, player_tag=clean_tag(player_tag)).first():
