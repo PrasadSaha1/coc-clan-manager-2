@@ -108,7 +108,6 @@ def clan_search(request):
         search_type = request.POST.get("search_type") 
         if search_type == "clan":
             old_tag = clean_tag(request.POST.get("clan_tag"))
-            raise ValueError(f"Invalid search type: {old_tag}")
             try:
                 clan_name, clan_tag, clan_type, clan_description, clan_members, clan_points = find_clan_with_tag(old_tag, ["name", "tag", "type", "description", "members", "clanPoints"])
                 clan_badge = get_clan_badge(old_tag)
@@ -117,6 +116,7 @@ def clan_search(request):
                         in_database = True
                     else:
                         in_database = False
+                raise ValueError(f"Invalid search type: {clan_points}")
             except KeyError:
                 return render(request, "main/clan_search.html", {"error": "clan"})
             return render(request, "main/clan_search.html", {"clan_name": clan_name, "clan_tag": clan_tag, "clan_type": clan_type,
