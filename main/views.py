@@ -275,7 +275,7 @@ def view_player(request, player_tag):
     is_saved = "not_logged_in"
     change = None
     player = get_all_player_data(clean_tag(player_tag))
-    is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
+   # is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
     if request.user.is_authenticated:
         saved_player_count = SavedPlayer.objects.filter(user=request.user).count()
         if SavedPlayer.objects.filter(user=request.user, player_tag=clean_tag(player_tag)).first():
