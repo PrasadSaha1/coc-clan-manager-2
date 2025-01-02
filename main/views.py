@@ -116,8 +116,7 @@ def clan_search(request):
                         in_database = True
                     else:
                         in_database = False
-                raise ValueError(f"Invalid search type: {clan_points}")
-            except KeyError:
+            except IndexError:
                 return render(request, "main/clan_search.html", {"error": "clan"})
             return render(request, "main/clan_search.html", {"clan_name": clan_name, "clan_tag": clan_tag, "clan_type": clan_type,
                         "clan_description": clan_description, "clan_members": clan_members, "clan_points": clan_points, "clan_badge": clan_badge, "saved": in_database})
