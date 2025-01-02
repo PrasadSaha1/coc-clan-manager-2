@@ -1,0 +1,507 @@
+{% extends 'main/base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+{{clan_data.name}}
+{% endblock %}
+
+<div id="content" style="position: relative;">
+    {% block content %}
+    {% if change %}
+        <div class="alert {% if change == 'too_many_clans' %}alert-danger{% else %}alert-success{% endif %} mt-3">
+            {% if change == "clan_saved" %}
+                <strong>{{ clan_data.name }} saved</strong>
+            {% elif change == "clan_removed" %}
+                <strong>{{ clan_data.name }} removed</strong>
+            {% elif change == "too_many_clans" %}
+                <strong>You cannot save more than 5 clans. Please remove one before adding another.</strong>
+            {% endif %}
+        </div>
+    {% endif %}
+    <form method="post" action="{% url 'my_clans' %}" class="button-form">
+        {% csrf_token %}
+        <button type="submit" name="back" class="btn btn-primary">Back</button>
+    </form>
+     <img src="{{ clan_data.badgeUrls.medium }}" alt="{{ clan_data.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+     <div style="text-align: center;">
+        <h3 style="margin: 0;">{{clan_data.name}}</h3>
+        <h5 style="margin: 5px 0; color: #666;">{{clan_data.tag}}</h5>
+        <h5 style="margin: 5px 0; color: #888;">{{clan_data.description}}</h5>
+    </div>
+
+    {% if not is_being_tracked %}
+        <h4>Tracking a clan's history will also track the history of its players</h4>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <form method="post" action="{% url 'view_clan' clan_tag mode %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                <button type="submit" name="track_clan_history" class="btn btn-primary">Start Tracking Clans's History</button>
+            </form>
+        </div>
+    {% else %}
+        <h4>This Clans's history is currently being tracked, along with all of its players</h4>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <form method="post" action="{% url 'view_clan_war_history' clan_tag %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                <button type="submit" name="view_clan_war_history" class="btn btn-primary">View Clan War History</button>
+            </form>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <form method="post" action="{% url 'view_clan_general_history' clan_tag %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                <button type="submit" name="view_clan_history" class="btn btn-primary">View Clan General History</button>
+            </form>
+        </div>
+    {% endif %}
+
+    {% if is_saved is True %}
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <form method="post" action="{% url 'view_clan' clan_tag 'general' %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ clan_tag }}">
+                <button type="submit" name="unsave_clan" class="btn btn-primary" value="yes">Unsave Clan</button>
+            </form>
+        </div>
+    {% elif is_saved is False %}
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <form method="post" action="{% url 'view_clan' clan_tag 'general' %}" class="button-form">
+            {% csrf_token %}
+            <input type="hidden" name="clan_tag" value="{{ clan_tag }}">
+            <button type="submit" name="save_clan" class="btn btn-primary" value="yes">Save Clan</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <h2 style="text-align: center; margin-top: 20px;">Clan Information</h2>
+
+    <!-- Flexbox container to place information side by side -->
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <div style="width: 50%; text-align: left; line-height: 1.6; background-color: #e28743; padding: 20px; border-radius: 8px;">
+            <h2 style="text-align: center; margin-bottom: 20px;">Basic Information</h2>
+            <p><strong>Clan War League:</strong> {{ clan_data.warLeague.name }}</p>
+            <p><strong>Points (Home Village):</strong> {{ clan_data.clanPoints }}</p>
+            <p><strong>Points (Builder Base):</strong> {{ clan_data.clanBuilderBasePoints }}</p>
+            <p><strong>Location:</strong> {{ clan_data.location.name }}</p>
+            <p><strong>Language:</strong> {{ clan_data.chatLanguage.name }}</p>
+            <p><strong>Clan Type:</strong> {% clan_type_display clan.type %}</p>
+            <p><strong>Required Trophies (Home Village):</strong> {{ clan_data.requiredTrophies }}</p>
+            <p><strong>Required Trophies (Builder Base):</strong> {{ clan_data.requiredBuilderBaseTrophies }}</p>
+            <p><strong>Required Town Hall:</strong> {{ clan_data.requiredTownhallLevel }}</p>
+        </div>
+
+        <div style="width: 50%; text-align: left; line-height: 1.6; background-color: #e28743; padding: 20px; border-radius: 8px;">
+            <h2 style="text-align: center; margin-bottom: 20px;">War Information</h2>
+            <p><strong>Wars Won:</strong> {{ clan_data.warWins }}</p>
+            <p><strong>War Win Streak:</strong> {{ clan_data.warWinStreak }}</p>
+            <p><strong>War Frequency:</strong> {% war_frequency_display clan_data.warFrequency %}</p>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; margin-top: 40px;"></h2>
+    <div style="width: 50%; margin: 0 auto; text-align: left; line-height: 1.6; background-color: #e28743; padding: 20px; border-radius: 8px;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Clan Labels</h2>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
+            {% for label in clan_data.labels %}
+                <div style="text-align: center;">
+                    <img src="{{ label.iconUrls.small }}" alt="{{ label.name }} Icon" style="max-width: 50px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+                    <p style="font-weight: bold; margin-top: 10px;">{{ label.name }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+
+    <h1 style="text-align: center; margin-top: 30px;">Clan Members</h1>
+    <h4 style="text-align: center; margin-top: 30px;">Click on a player's name to view their profile and upgrade history</h4>
+
+    <div class="button-container">
+        <form method="post" action="{% url 'view_clan' clan_tag 'general' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-button">General</button>
+        </form>
+        <form method="post" action="{% url 'view_clan' clan_tag 'home_village' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-button">Home Village</button>
+        </form>
+        <form method="post" action="{% url 'view_clan' clan_tag 'builder_base' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-button">Builder Base</button>
+        </form>
+        <form method="post" action="{% url 'view_clan' clan_tag 'all' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-button">All</button>
+        </form>
+    </div>
+    
+    <table id="sortableTable" class="sortable-table">
+        <thead>
+            <tr>
+                {% if mode == "general" %}
+                    <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 1)">Tag <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('role', 2)">Role <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 3)">Donations <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 4)">Donations Recieved <span class="sort-arrow"></span></th>
+                {% elif mode == "home_village" %}
+                    <th onclick="sortTable('none', 0)">Badge <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 1)">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 2)">Town Hall <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 3)">Trophies <span class="sort-arrow"></span></th>
+                {% elif mode == "builder_base" %}
+                    <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 1)">Builder Base Trophies <span class="sort-arrow"></span></th>
+                {% elif mode == "all" %}
+                    <th onclick="sortTable('none', 0)">Badge <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 1)">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 2)">Tag <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('role', 3)">Role <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 4)">Donations <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 5)">Donations Recieved <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 6)">Town Hall <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 7)">Home Village Trophies <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 8)">Builder Base Trophies <span class="sort-arrow"></span></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in member_data.items %}
+            <tr>
+                {% if mode == "general" %}
+                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                    <td>{{ member.tag }}</td>
+                    <td>
+                        {% if member.role == "leader" %} Leader
+                        {% elif member.role == "coLeader" %} Co-Leader
+                        {% elif member.role == "admin" %} Elder
+                        {% elif member.role == "member" %} Member
+                        {% else %} {{ member.role }} {% endif %}
+                    </td>
+                    <td>{{ member.donations }}</td>
+                    <td>{{ member.donationsReceived }}</td>
+                {% elif mode == "home_village" %}
+                    <td>    
+                        <img src="{{ member.league.iconUrls.tiny }}" alt="{{ clan_name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">                    
+                    </td>
+                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                    <td>{{ member.townHallLevel }}</td>
+                    <td>{{ member.trophies }}</td>
+                {% elif mode == "builder_base" %}
+                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                <td>{{ member.builderBaseTrophies }}</td>
+                {% elif mode == "all" %}
+                    <td>    
+                        <img src="{{ member.league.iconUrls.tiny }}" alt="{{ clan_name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">                    
+                    </td>
+                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                    <td>{{ member.tag }}</td>
+                    <td>
+                        {% if member.role == "leader" %} Leader
+                        {% elif member.role == "coLeader" %} Co-Leader
+                        {% elif member.role == "admin" %} Elder
+                        {% elif member.role == "member" %} Member
+                        {% else %} {{ member.role }} {% endif %}
+                    </td>
+                    <td>{{ member.donations }}</td>
+                    <td>{{ member.donationsReceived }}</td>
+                    <td>{{ member.townHallLevel }}</td>
+                    <td>{{ member.trophies }}</td>
+                    <td>{{ member.builderBaseTrophies }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        let currentSortColumn = 4; // Default column is Trophies (index 4)
+        let sortDirection = 'desc'; // Default sort direction is descending (highest first)
+        
+        // Define role hierarchy (Leader > Co-Leader > Elder > Member)
+        const roleHierarchy = {
+            'leader': 1,
+            'co-leader': 2,
+            'elder': 3,
+            'member': 4
+        };
+
+        // Function to sort the table
+        function sortTable(sortingType, row) {
+            const table = document.getElementById("sortableTable");
+            let rows, switching, i, x, y, shouldSwitch;
+
+            switching = true;
+            let dir = sortDirection; // Use current sort direction
+
+            if (sortingType === "role") { 
+                if (row === currentSortColumn) {
+                    if (dir === 'asc') {
+                        dir = 'desc'; // Change to descending
+                    } else if (dir === 'desc') {
+                        dir = 'default'; // Change to default
+                    } else {
+                        dir = 'asc'; // Change back to ascending
+                    }
+                } else {
+                    dir = 'asc'; // Reset direction to ascending for a new column
+                }
+            } else if (sortingType != "none") { 
+                if (row === currentSortColumn) {
+                    if (dir === 'desc') {
+                        dir = 'asc'; // Change to ascending
+                    } else if (dir === 'asc') {
+                        dir = 'default'; // Change to default
+                    } else {
+                        dir = 'desc'; // Change back to descending
+                    }
+                } else {
+                    dir = 'desc'; // Reset direction to descending for a new column
+                }
+            } 
+
+            sortDirection = dir;
+            currentSortColumn = row; // Update the current column index
+
+            // Reset arrows before sorting
+            resetArrows();
+
+            // Add the current sorting direction arrow to the header
+            addArrow(row, dir);
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                // Loop through all table rows (except the first row with headers)
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[row];
+                    y = rows[i + 1].getElementsByTagName("TD")[row];
+
+                    // Custom sorting logic for the Role column (index 3)
+                    if (sortingType === "role") { // Role column (index 3)
+                        let xRole = roleHierarchy[x.innerHTML.trim().toLowerCase()];
+                        let yRole = roleHierarchy[y.innerHTML.trim().toLowerCase()];
+
+                        if (dir === "asc") {
+                            if (xRole > yRole) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir === "desc") {
+                            if (xRole < yRole) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    } else if (sortingType === "string") {
+                        // For other columns, use the default string-based comparison
+                        let xText = x.textContent.trim().toLowerCase(); // Use textContent and trim to clean up
+                        let yText = y.textContent.trim().toLowerCase();
+
+                        if (dir === "asc") {
+                            if (xText > yText) {
+                                shouldSwitch = true;
+                                break; // Once you've determined a switch, no need to keep comparing
+                            }
+                        } else if (dir === "desc") {
+                            if (xText < yText) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    } else if (sortingType === "int") { // Integer comparison
+                        let xInt = parseInt(x.innerHTML.trim(), 10);
+                        let yInt = parseInt(y.innerHTML.trim(), 10);
+
+                        if (dir === "asc") {
+                            if (xInt > yInt) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir === "desc") {
+                            if (xInt < yInt) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+
+            // Reset table to default (sorted by Trophies in descending order)
+            if (dir === 'default') {
+                resetTableToDefault();
+            }
+        }
+
+        // Reset the table to default sorting (by Trophies in descending order)
+        function resetTableToDefault() {
+            if ("{{mode}}" === "general") {
+                defaultRow = 2;
+                defaultRowType = "role"
+            }
+            else if ("{{mode}}" === "home_village"){
+                defaultRow = 3;
+                defaultRowType = "int"
+            }
+            else if ("{{mode}}" === "builder_base"){
+                defaultRow = 1;
+                defaultRowType = "int"
+            }
+            else if ("{{mode}}" === "all"){
+                defaultRow = 7;
+                defaultRowType = "int"
+            }
+            const table = document.getElementById("sortableTable");
+            let rows = table.rows;
+
+            // Sort the table
+            if(defaultRowType === "int"){
+                let sortedRows = Array.from(rows).slice(1).sort((a, b) => {
+                    let x = parseInt(a.cells[defaultRow].innerText, 10); 
+                    let y = parseInt(b.cells[defaultRow].innerText, 10);
+                    console.log(x, y);
+                    return y - x; // Descending order
+                });
+                sortedRows.forEach(row => table.appendChild(row));
+            } else if (defaultRowType === "role"){
+                let sortedRows = Array.from(rows).slice(1).sort((a, b) => {
+                    let x = a.cells[defaultRow].innerText
+                    let y = b.cells[defaultRow].innerText
+                    console.log(roleHierarchy[x.toLowerCase()])
+                    let xVal = roleHierarchy[x.toLowerCase()];
+                    let yVal = roleHierarchy[y.toLowerCase()];
+                    return xVal - yVal;
+                });
+                sortedRows.forEach(row => table.appendChild(row));
+            }
+        }
+
+        // Reset arrows
+        function resetArrows() {
+            const arrows = document.querySelectorAll('.sort-arrow');
+            arrows.forEach(arrow => {
+                arrow.innerHTML = ''; // Remove any arrows
+            });
+        }
+
+        // Add the sorting arrow
+        function addArrow(n, dir) {
+            const header = document.querySelectorAll('th')[n];
+            const arrow = header.querySelector('.sort-arrow');
+            if (dir === 'asc') {
+                arrow.innerHTML = '▲'; // Ascending arrow
+            } else if (dir === 'desc') {
+                arrow.innerHTML = '▼'; // Descending arrow
+            }
+        }
+
+        // Initialize the table to be sorted by Trophies in descending order on page load
+        window.onload = resetTableToDefault;
+    </script>
+
+    <style>
+        .clan-info h3, .clan-info h5, .clan-info p {
+            margin: 0;
+            padding: 0;
+        }
+        .clan-info {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        th {
+            cursor: pointer;
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        th:hover {
+            background-color: #ddd;
+        }
+
+        .sort-arrow {
+            margin-left: 8px;
+            font-size: 1em;
+        }
+
+        /* Hover effect on rows */
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Center table headers and content */
+        table {
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h4{
+            text-align: center;
+        }
+
+        /* Center the buttons and add margin between buttons and table */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 180px; /* Offset to the right of the sidebar */
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10; /* Ensure it is above other content */
+            transition: background-color 0.3s ease;
+        }
+        
+    </style>
+    {% endblock %}
+</div>

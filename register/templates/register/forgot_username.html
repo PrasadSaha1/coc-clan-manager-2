@@ -1,0 +1,18 @@
+{% extends "main/base_form.html" %}
+
+{% block title %}
+Forgot Username
+{% endblock %}
+
+{% block additional_links %}
+<div class="text-center mb-4">
+    <p>Remember your username? <a href="/register/login">Log in here.</a></p>
+    <p>Know your username but forgot your password? Click <a href="/register/forgot_password">here</a>.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+{% with button_text="Retrieve Username" title="Retrieve Your Username" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

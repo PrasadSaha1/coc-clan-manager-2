@@ -1,0 +1,623 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}
+Clan War History for {{clan.name}}
+{% endblock %}
+
+<div id="content">
+    {% block content %}
+    <form method="post" action="{% url 'view_clan' clan.tag 'general' %}" class="button-form">
+        {% csrf_token %}
+        <button type="submit" name="back" class="view-button">Back</button>
+    </form>
+    <h1 class="centered-heading">War History for {{ clan.name }}</h1>
+
+    {% if each_war_data == "N/A" %}
+        <h3 class="center-text">There is no history available for this clan. Ensure that the war log is public and check back after the next war.</h3>
+    {% else %}
+    <div class="clan-grid">
+        <h4 class="center-text">If the war log is public, information is fetched 15 seconds before the end of the war, and if the clan has not started a new war, will be re-fetched 4 minutes after the war ends. Information fetched before the end of the war may be slightly inaccurate, so be sure to wait at least 4 minutes before starting another war.</h4>
+        <h3>Options</h3>
+
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <form method="post" action="{% url 'view_clan_war_history' clan.tag %}" class="button-form" style="text-align: center;">
+                {% csrf_token %}
+                
+                <!-- Type of War -->
+                <div class="war-options">
+                    <h4>Type of War</h4>
+                    <label><input type="radio" name="type_of_war" value="regular" {% if type_of_war == "regular" %}checked{% endif %}> Regular Only</label>
+                    <label><input type="radio" name="type_of_war" value="cwl" {% if type_of_war == "cwl" %}checked{% endif %}> CWL Only</label>
+                    <label><input type="radio" name="type_of_war" value="both" {% if type_of_war == "both" %}checked{% endif %}> Both</label>
+                </div>
+        
+                <!-- Type of Data -->
+                <div class="war-options">
+                    <h4>Type of Data</h4>
+                    <label><input type="radio" name="type_of_data" value="summary" {% if type_of_data == "summary" %}checked{% endif %}> Summary</label>
+                    <label><input type="radio" name="type_of_data" value="in-depth" {% if type_of_data == "in-depth" %}checked{% endif %}> In-depth</label>
+                </div>
+        
+                <!-- Include Member Data -->
+                <div class="war-options">
+                    <h4>Include Member Data</h4>
+                    <label><input type="radio" name="include_member_data" value="yes" {% if include_member_data == "yes" %}checked{% endif %}> Yes</label>
+                    <label><input type="radio" name="include_member_data" value="no" {% if include_member_data == "no" %}checked{% endif %}> No</label>
+                </div>
+        
+                <!-- Submit Button -->
+                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                    <button type="submit" name="war_options" class="view-button">Submit</button>
+                </div>
+            </form>
+        </div>        
+
+        {% if type_of_data == "in-depth" %}
+            {% for record in each_war_data %}
+                <div class="war-section" 
+                    style="
+                        {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
+                            background-color: #28a745;  /* Green for Win */
+                        {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
+                            background-color: #dc3545;  /* Red for Loss */
+                        {% elif record.war_info.clan.stars == record.war_info.opponent.stars %}
+                            {% if record.war_info.clan.destructionPercentage > record.war_info.opponent.destructionPercentage %}
+                                background-color: #28a745;  /* Green for Win */
+                            {% elif record.war_info.clan.destructionPercentage < record.war_info.opponent.destructionPercentage %}
+                                background-color: #dc3545;  /* Red for Loss */
+                            {% else %}
+                                background-color: #f8f9fa;  /* Default color for Draw */
+                            {% endif %}
+                        {% endif %}
+                    ">
+
+                    <h2>Preparation Day started at {{ record.war_info.preparationStartTime|convert_to_est }}</h2>
+                    {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
+                        <h1 class="result-heading">Win</h1>
+                    {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
+                        <h1 class="result-heading">Loss</h1>
+                    {% elif record.war_info.clan.stars == record.war_info.opponent.stars %}
+                        {% if record.war_info.clan.destructionPercentage > record.war_info.opponent.destructionPercentage %}
+                            <h1 class="result-heading">Win</h1>
+                        {% elif record.war_info.clan.destructionPercentage < record.war_info.opponent.destructionPercentage %}
+                            <h1 class="result-heading">Loss</h1>
+                        {% else %}
+                            <h1 class="result-heading">Draw</h1>
+                        {% endif %}
+                    {% endif %}
+                    {% if record.point_fetched == "+4" %}
+                        <h3>Information was fetched after the war ended and should be completly accurate.</h3>
+                    {% else %}
+                        <h3>Information was fetched before the war ended (-15 seconds) and may be inaccurate if players attacked near the end.</h3>
+                    {% endif %}
+
+                    <div class="clan-container">
+                        <div class="clan-info left">
+                            <img src="{{ record.war_info.clan.badgeUrls.medium }}" alt="{{ record.war_info.clan.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+                            <h1>{{ record.war_info.clan.name }}</h1>
+                            <h4><strong>Tag:</strong> {{ record.war_info.clan.tag }}</h4>
+                            <h4><strong>Attacks:</strong> {{ record.war_info.clan.attacks }}</h4>
+                            <h4><strong>Stars:</strong> {{ record.war_info.clan.stars }}</h4>
+                            <h4><strong>Total Destruction:</strong> {{ record.war_info.clan.destructionPercentage|floatformat:2 }}%</h4>
+                        </div>
+                    
+                        <div class="clan-info right">
+                            <img src="{{ record.war_info.opponent.badgeUrls.medium }}" alt="{{ record.war_info.opponent.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+                            <h1>{{ record.war_info.opponent.name }}</h1>
+                            <h4><strong>Tag:</strong> {{ record.war_info.opponent.tag }}</h4>
+                            <h4><strong>Attacks:</strong> {{ record.war_info.opponent.attacks }}</h4>
+                            <h4><strong>Stars:</strong> {{ record.war_info.opponent.stars }}</h4>
+                            <h4><strong>Total Destruction:</strong> {{ record.war_info.opponent.destructionPercentage|floatformat:2 }}%</h4>
+                        </div>
+
+                    </div>
+                    {% if include_member_data == "yes" %}
+                        <h1 class="result-heading">Member Data</h1>
+                        <table id="sortableTable" class="sortable-table">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('string', 1)">Tag <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 2)">Roster Number <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 3)">Number of Attacks <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 4)">Attack 1 Stars <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 5)">Attack 1 Destruction <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 6)">Attack 2 Stars <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 7)">Attack 2 Destruction <span class="sort-arrow"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in record.war_info.clan.members %}
+                                <tr>
+                                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                                    <td>{{member.tag}}</td>
+                                    <td>{{member.mapPosition}}</td>
+                                    <td>{{member.attacks|length}}</td>
+                                    <td>{{ member.attacks.0.stars|default:0 }}</td>
+                                    <td>{{ member.attacks.0.destructionPercentage|default:0 }}</td>
+                                    <td>{{ member.attacks.1.stars|default:0 }}</td>
+                                    <td>{{ member.attacks.1.destructionPercentage|default:0 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            {% for record in monthly_data_war %}
+                <div class="war-section" style="background-color: white;">
+                    <div>
+                       <h2>{{ record.month_year|date:"F Y" }}</h2>
+                       <p><strong>Number of Wars:</strong> {{ record.num_wars|floatformat:0 }}</p>
+                       <p><strong>Win rate:</strong> {{ record.win_rate|mul:100|floatformat:2 }}%</p>
+                       <p><strong>Percent of Attacks Completed:</strong> {{ record.percent_attacks_completed|mul:100|floatformat:2 }}%</p>
+                       <p><strong>Average War Size:</strong> {{ record.average_war_size|floatformat:2 }}</p>
+                       <p><strong>Average Total Destruction:</strong> {{ record.average_total_destruction|floatformat:2 }}%</p>
+                       <p><strong>Average Unique Stars per Player:</strong> {{ record.average_stars_per_player|floatformat:2 }} ({{record.average_stars_per_player|mul:33.3|floatformat:2 }}% of total stars)</p>                       
+                    </div>
+                {% if include_member_data == "yes" %}
+                    <h1 class="result-heading">Member Data</h1>
+                    <table id="sortableTable" class="sortable-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('string', 1)">Tag <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('int', 2)">Number of Wars <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('int', 3)">Number of Attacks <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('int', 4)">Number of Missed Attacks <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('int', 5)">Average Stars per Attack <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('int', 6)">Average Destruction per Attack <span class="sort-arrow"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in summary_member_data %}
+                                {% if data.month_year == record.month_year %}
+                                    <tr>
+                                        <td><a href="{% url 'view_player' data.player %}" style="color: inherit; text-decoration: none;">{{data.player|fetch_player_name}}</a></td>
+                                        <td>#{{data.player}}</td>
+                                        <td>{{data.num_wars}}</td>
+                                        <td>{{data.num_attacks}}</td>
+                                        <td>{{data.num_missed_attacks}}</td>
+                                        <td>{{data.average_total_stars|mul:.5|floatformat:2}} ({{data.average_total_stars|mul:16.67|floatformat:2 }}%)</td>
+                                        <td>{{data.average_total_destruction|mul:.5|floatformat:2}}%</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_styles %}
+<style>
+.war-options {
+    display: flex;
+    flex-direction: row; /* Arrange elements left to right */
+    justify-content: center; /* Center the entire row horizontally */
+    align-items: center; /* Align items vertically in the center */
+    gap: 15px; /* Add space between each option */
+    margin-bottom: 20px; /* Add spacing between sections */
+    text-align: center;
+}
+
+.war-options h4 {
+    margin: 0 20px 0 0; /* Add spacing to the right of the heading */
+}
+
+
+    .war-options button {
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .hello-heading {
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+        margin: 20px auto;
+        color: #333;
+    }
+    .war-options button:hover {
+        background-color: #0056b3;
+    }
+    .center-text {
+        text-align: center;  /* Centers text horizontally */
+    }
+    .centered-heading {
+        text-align: center;
+        margin: 0 auto;
+    }
+    .clan-grid {
+        display: grid;
+        gap: 20px; /* Space between clans */
+        margin-top: 20px;
+    }
+    .result-heading {
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+        margin: 20px auto;
+        color: #333;
+    }
+
+    .war-section {
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+
+    .clan-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .clan-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .clan-info.left {
+        text-align: left;
+    }
+
+    .clan-info.right {
+        text-align: right;
+    }
+    .clan-details {
+        padding: 15px;
+    }
+
+    .clan-badge {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .clan-details p {
+        margin: 8px 0;
+        font-size: 16px;
+        word-wrap: break-word; /* Allow text to wrap if it's too long */
+    }
+
+    .clan-details p strong {
+        color: #007BFF;
+    }
+
+    .button-form {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .save-button, .remove-button, .view-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-button {
+        background-color: #dc3545;
+    }
+    .view-button {
+        background-color: #007BFF;
+    }
+
+    .remove-button:hover {
+        background-color: #c82333;
+    }
+    .view-button:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;  /* Light green background */
+        color: #155724;  /* Dark green text */
+        border: 1px solid #c3e6cb;  /* Light green border */
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;  /* Light red background */
+        color: #721c24;  /* Dark red text */
+        border: 1px solid #f5c6cb;  /* Light red border */
+    }
+
+    .alert strong {
+        font-weight: bold;
+    }
+
+    h2{
+        text-align: center;
+    }
+
+    h4 {
+        font-weight: normal;
+        }
+        .clan-info h3, .clan-info h5, .clan-info p {
+            margin: 0;
+            padding: 0;
+        }
+        .clan-info {
+            margin-bottom: 20px;
+        }
+        .sortable-table {
+    width: 100%; /* Make the table take up the full width */
+    table-layout: auto; /* Automatically adjust the column widths */
+    border-collapse: collapse; /* Collapses borders */
+}
+
+.sortable-table th,
+.sortable-table td {
+    padding: 8px; /* Add some padding */
+    border: 1px solid #ddd; /* Light border for table cells */
+    text-align: left; /* Align text to the left */
+}
+
+.sortable-table th {
+    background-color: #f2f2f2; /* Light gray background for headers */
+    font-weight: bold; /* Make headers bold */
+}
+
+.sortable-table td {
+    word-wrap: break-word; /* Allow long text to wrap within the cell */
+}
+
+/* Optional: You can set a max width for columns if needed */
+.sortable-table th:nth-child(1),
+.sortable-table td:nth-child(1) {
+    max-width: 150px; /* Set max width for the first column */
+}
+
+.sortable-table th:nth-child(2),
+.sortable-table td:nth-child(2) {
+    max-width: 120px; /* Set max width for the second column */
+}
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        th {
+            cursor: pointer;
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        th:hover {
+            background-color: #ddd;
+        }
+
+        .sort-arrow {
+            margin-left: 8px;
+            font-size: 1em;
+        }
+
+        /* Hover effect on rows */
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Center table headers and content */
+        table {
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        /* Center the buttons and add margin between buttons and table */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 180px; /* Offset to the right of the sidebar */
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10; /* Ensure it is above other content */
+            transition: background-color 0.3s ease;
+        }
+        h3{
+            text-align: center;
+        }
+        table {
+            width: 150%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table {
+            margin: 0 auto;
+        }
+
+        
+</style>
+
+<script>
+    let currentSortColumn = 2; // Default column is Roster Number (index 2)
+    let sortDirection = 'asc'; // Default sort direction is descending (highest first)
+    
+    // Function to sort the table
+    function sortTable(sortingType, row) {
+        const table = document.getElementById("sortableTable");
+        let rows, switching, i, x, y, shouldSwitch;
+
+        switching = true;
+        let dir = sortDirection; // Use current sort direction
+ 
+        if (row === currentSortColumn) {
+            if (dir === 'desc') {
+                dir = 'asc'; // Change to ascending
+            } else if (dir === 'asc') {
+                dir = 'default'; // Change to default
+            } else {
+                dir = 'desc'; // Change back to descending
+            }
+        } else {
+            dir = 'desc'; // Reset direction to descending for a new column
+        }
+
+        sortDirection = dir;
+        currentSortColumn = row; // Update the current column index
+
+        // Reset arrows before sorting
+        resetArrows();
+
+        // Add the current sorting direction arrow to the header
+        addArrow(row, dir);
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            // Loop through all table rows (except the first row with headers)
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[row];
+                y = rows[i + 1].getElementsByTagName("TD")[row];
+
+                if (sortingType === "string") { // For other columns, use the default string-based comparison
+                    if (dir === "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else if (sortingType === "int") { // Integer comparison
+                    let xInt = parseInt(x.innerHTML.trim(), 10);
+                    let yInt = parseInt(y.innerHTML.trim(), 10);
+
+                    if (dir === "asc") {
+                        if (xInt > yInt) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (xInt < yInt) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+
+        // Reset table to default (sorted by Trophies in descending order)
+        if (dir === 'default') {
+            resetTableToDefault();
+        }
+    }
+
+    // Reset the table to default sorting (by Trophies in descending order)
+    function resetTableToDefault(typeOfData) {
+        if(typeOfData == "summary"){
+            var defaultRow = 2;
+        }
+        else if(typeOfData == "in-depth"){
+            var defaultRow = 2;
+        }
+        const table = document.getElementById("sortableTable");
+        let rows = table.rows;
+
+        // Sort the table
+        let sortedRows = Array.from(rows).slice(1).sort((a, b) => {
+            let x = parseInt(a.cells[defaultRow].innerText, 10); 
+            let y = parseInt(b.cells[defaultRow].innerText, 10);
+            console.log(x, y);
+            if (typeOfData == "summary") {
+                return y - x; // Descending order for summary
+            } else if (typeOfData == "in-depth") {
+                return x - y; // Ascending order for in-depth
+            }
+        });
+        sortedRows.forEach(row => table.appendChild(row));
+    }
+
+    // Reset arrows
+    function resetArrows() {
+        const arrows = document.querySelectorAll('.sort-arrow');
+        arrows.forEach(arrow => {
+            arrow.innerHTML = ''; // Remove any arrows
+        });
+    }
+
+    // Add the sorting arrow
+    function addArrow(n, dir) {
+        const header = document.querySelectorAll('th')[n];
+        const arrow = header.querySelector('.sort-arrow');
+        if (dir === 'asc') {
+            arrow.innerHTML = '▲'; // Ascending arrow
+        } else if (dir === 'desc') {
+            arrow.innerHTML = '▼'; // Descending arrow
+        }
+    }
+
+    // Initialize the table to be sorted by Trophies in descending order on page load
+    window.onload = resetTableToDefault("{{type_of_data}}");
+</script>
+
+{% endblock %}
+{% endblock %}

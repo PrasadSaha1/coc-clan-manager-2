@@ -1,0 +1,61 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+<div id="content">
+    {% block content %}
+    <div>
+        <h1 style="text-align: center;">Welcome to the Website</h1>
+        <h3 style="text-align: center;">This is the website description</h3>
+    </div>
+
+    {% if is_logged_in is False %}
+        <div>
+            <h3 style="text-align: center; margin-top: 50px;">Create an account to get started!</h3>
+            <a href="/register/create_account" class="d-block text-center mb-4">
+                <button class="btn btn-primary btn-lg">Create Account</button>
+            </a>
+
+            <h3 style="text-align: center; margin-top: 50px;">Or log into an existing account</h3>
+            <a href="/register/login" class="d-block text-center">
+                <button class="btn btn-secondary btn-lg">Log in</button>
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Features Section -->
+    <div class="features-section mt-5">
+        <h2 style="text-align: center; margin-top: 50px;">Explore Our Features</h2>
+
+        <!-- Feature 1 -->
+        <div class="d-flex align-items-center justify-content-between mt-4">
+            <img src="https://picsum.photos/200" alt="Feature 1" class="img-fluid rounded" style="width: 40%;">
+            <div class="text-content ms-4" style="width: 55%;">
+                <h3>Feature 1</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ac eros vel lacus dignissim volutpat.</p>
+            </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="d-flex align-items-center justify-content-between mt-4 flex-row-reverse">
+            <img src="https://picsum.photos/200" alt="Feature 2" class="img-fluid rounded" style="width: 40%;">
+            <div class="text-content me-4" style="width: 55%;">
+                <h3>Feature 2</h3>
+                <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Curabitur blandit tempus porttitor.</p>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="d-flex align-items-center justify-content-between mt-4">
+            <img src="https://picsum.photos/200" alt="Feature 3" class="img-fluid rounded" style="width: 40%;">
+            <div class="text-content ms-4" style="width: 55%;">
+                <h3>Feature 3</h3>
+                <p>Aenean lacinia bibendum nulla sed consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+</div>

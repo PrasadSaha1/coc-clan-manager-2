@@ -1,0 +1,20 @@
+{% extends "main/base_form.html" %}
+
+{% block title %}
+Create Account
+{% endblock %}
+
+{% block additional_links %}
+<div class="text-center mb-4">
+    <p>
+        Already have an account? 
+        <a href="/register/login" class="text-primary">Login here</a>.
+    </p>
+</div>
+{% endblock %}
+
+{% block content %}
+{% with button_text="Create Account" title="Create an Account" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

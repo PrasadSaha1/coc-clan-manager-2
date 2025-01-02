@@ -1,0 +1,19 @@
+{% extends "main/base_form.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block additional_links %}
+<div class="text-center mb-4">
+    <p>Don't have an account? Create one <a href="/register/create_account"> here.</a></p>
+    <p>Forgot your username? Click <a href="/register/forgot_username">here</a> to retrieve it.</p>
+    <p>Forgot your password? Click <a href="/register/forgot_password">here</a> to reset it.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+{% with button_text="Login" title="Login" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

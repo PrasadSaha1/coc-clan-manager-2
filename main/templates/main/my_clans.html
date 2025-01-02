@@ -1,0 +1,133 @@
+{% extends 'main/base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+My Clans
+{% endblock %}
+
+{% block content %}
+<div id="content">
+    <h1>Saved Clans</h1>
+    
+    <div class="clan-grid">
+        {% for clan in clans %}
+        <div class="clan-container">
+            <div class="clan-details">
+                <img src="{{ clan.badge }}" alt="{{ clan.name }} Badge" class="clan-badge">
+                <p><strong>Clan Name:</strong> {{ clan.name }}</p>
+                <p><strong>Clan Tag:</strong> {{ clan.tag }}</p>
+                
+                <p><strong>Clan Type:</strong> {% clan_type_display clan.type %}</p>
+                
+                <p><strong>Description:</strong> {{ clan.description }}</p>
+                <p><strong>Members:</strong> {{ clan.members }}</p>
+                <p><strong>Clan Points:</strong> {{ clan.clan_points }}</p>
+                
+                <form method="post" action="{% url 'view_clan' clan.tag 'general' %}" class="button-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                    <button type="submit" name="view_clan" class="view-button">View Clan</button>
+                </form>
+
+                <form method="post" action="{% url 'toggle_save_clan' clan.tag %}" class="button-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                    <button type="submit" name="save_clan" class="remove-button">Remove Clan</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_styles %}
+<style>
+    .clan-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(45%, 1fr)); /* Two clans side by side */
+        gap: 20px; /* Space between clans */
+        margin-top: 20px;
+    }
+
+    .clan-container {
+        background-color: #f8f9fa;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .clan-details {
+        padding: 15px;
+    }
+
+    .clan-badge {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .clan-details p {
+        margin: 8px 0;
+        font-size: 16px;
+        word-wrap: break-word; /* Allow text to wrap if it's too long */
+    }
+
+    .clan-details p strong {
+        color: #007BFF;
+    }
+
+    .button-form {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .save-button, .remove-button, .view-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-button {
+        background-color: #dc3545;
+    }
+    .view-button {
+        background-color: #007BFF;
+    }
+
+    .remove-button:hover {
+        background-color: #c82333;
+    }
+    .view-button:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;  /* Light green background */
+        color: #155724;  /* Dark green text */
+        border: 1px solid #c3e6cb;  /* Light green border */
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;  /* Light red background */
+        color: #721c24;  /* Dark red text */
+        border: 1px solid #f5c6cb;  /* Light red border */
+    }
+
+    .alert strong {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+{% endblock %}

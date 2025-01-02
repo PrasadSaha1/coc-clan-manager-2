@@ -1,0 +1,133 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+My Players
+{% endblock %}
+
+{% block content %}
+<div id="content">
+    <h1>Saved Players</h1>
+    
+    <div class="clan-grid">
+        {% for player in players %}
+        <div class="clan-container">
+            <div class="clan-details">
+                {% if player.league %}
+                    <img src="{{ player.league.iconUrls.small }}" style="max-width: 150px;">
+                {% else %}
+                    <img src="{% static 'images/unranked_badge.webp' %}" style="max-width: 150px;">
+                {% endif %}
+                <p><strong>Player Name:</strong> {{ player.name }}</p>
+                <p><strong>Player Tag:</strong> {{ player.tag }}</p>
+                <p><strong>Town Hall:</strong> {{ player.townHallLevel }}</p>
+                <p><strong>Trophies:</strong> {{ player.trophies }}</p>
+                <p><strong>Clan:</strong> {{ player.clan.name }}</p>
+            </div>
+            <form method="post" action="{% url 'view_player' player.tag %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="player_tag" value="{{ player.tag }}">
+                <button type="submit" name="view_player" class="view-button">View Player</button>
+            </form>
+
+            <form method="post" action="{% url 'toggle_save_player' player.tag %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="player_tag" value="{{ player.tag }}">
+                <button type="submit" name="save_player" class="remove-button">Remove Player</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_styles %}
+<style>
+    .clan-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(45%, 1fr)); /* Two clans side by side */
+        gap: 20px; /* Space between clans */
+        margin-top: 20px;
+    }
+
+    .clan-container {
+        background-color: #f8f9fa;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .clan-details {
+        padding: 15px;
+    }
+
+    .clan-badge {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .clan-details p {
+        margin: 8px 0;
+        font-size: 16px;
+        word-wrap: break-word; /* Allow text to wrap if it's too long */
+    }
+
+    .clan-details p strong {
+        color: #007BFF;
+    }
+
+    .button-form {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .save-button, .remove-button, .view-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-button {
+        background-color: #dc3545;
+    }
+    .view-button {
+        background-color: #007BFF;
+    }
+
+    .remove-button:hover {
+        background-color: #c82333;
+    }
+    .view-button:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;  /* Light green background */
+        color: #155724;  /* Dark green text */
+        border: 1px solid #c3e6cb;  /* Light green border */
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;  /* Light red background */
+        color: #721c24;  /* Dark red text */
+        border: 1px solid #f5c6cb;  /* Light red border */
+    }
+
+    .alert strong {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+{% endblock %}

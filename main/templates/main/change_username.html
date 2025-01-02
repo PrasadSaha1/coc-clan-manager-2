@@ -1,0 +1,11 @@
+{% extends "main/base_form.html" %}
+
+{% block title %}
+Change Username
+{% endblock %}
+
+{% block content %}
+{% with button_text="Change Username" title="Change Your Username" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

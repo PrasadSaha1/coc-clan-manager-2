@@ -1,0 +1,314 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Clan/Player Search
+{% endblock %}
+
+{% block content %}
+<div id="content" class="clan-search-container">
+    <h1>Clan/Player Search</h1>
+
+    <!-- Add selection for Clan or Player Search -->
+    <form method="post" action="{% url 'clan_search' %}" class="search-form">
+        {% csrf_token %}
+        
+        <!-- Radio buttons for choosing search type -->
+        <label>Select Search Type:</label>
+        <div class="radio-group">
+            <input type="radio" id="clan_search" name="search_type" value="clan" 
+                   {% if not player_data %}checked{% endif %}>
+            <label for="clan_search">Clan Search</label>
+        
+            <input type="radio" id="player_search" name="search_type" value="player" 
+                   {% if player_data %}checked{% endif %}>
+            <label for="player_search">Player Search</label>
+        </div>
+        
+        <label for="clan_tag">Tag (entering the hashtag is optional, case-insensitive):</label>
+        <input type="text" id="clan_tag" name="clan_tag" required>
+        
+        <button type="submit">Search</button>
+    </form>
+
+    {% if clan_name %}
+        <div class="clan-details">
+            <h2>Clan Information</h2>
+            <img src="{{ clan_badge }}" alt="{{ clan_name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px;">
+            <p><strong>Clan Name:</strong> {{ clan_name }}</p>
+            <p><strong>Clan Tag:</strong> {{ clan_tag }}</p>
+            
+            {% if clan_type == "open" %}
+                <p><strong>Clan Type:</strong> Open</p>
+            {% elif clan_type == "closed" %}
+                <p><strong>Clan Type:</strong> Closed</p>
+            {% else %}
+                <p><strong>Clan Type:</strong> Invite Only</p>
+            {% endif %}
+            
+            <p><strong>Description:</strong> {{ clan_description }}</p>
+            <p><strong>Members:</strong> {{ clan_members }}</p>
+            <p><strong>Clan Points:</strong> {{ clan_points }}</p>
+            
+            <form method="post" action="{% url 'view_clan' clan_tag 'general' %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ clan_tag }}">
+                <button type="submit" name="view_clan" class="view-button">View Clan</button>
+            </form>
+            {% if saved is True %}
+                <form method="post" action="{% url 'toggle_save_clan' clan_tag %}" class="button-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="clan_tag" value="{{ clan_tag }}">
+                    <button type="submit" name="remove_clan" class="remove-button">Remove Clan</button>
+                </form>
+            {% elif saved is False %}
+                <form method="post" action="{% url 'toggle_save_clan' clan_tag %}" class="button-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="clan_tag" value="{{ clan_tag }}">
+                    <button type="submit" name="save_clan" class="save-button">Save Clan</button>
+                </form>
+            {% else %}
+                <button name="save_clan" class="save-button" onclick="showConfirmationModal({ type: 'clan' });">Save Clan</button>
+            {% endif %}
+        </div>
+    {% elif player_data and player_data != "error" %}
+        <div class="clan-details">
+            <h2>Player Information</h2>
+            <p><strong>Name:</strong> {{ player_data.name }}</p>
+            <p><strong>Clan Tag:</strong> {{ player_data.tag }}</p>
+            <p><strong>Town Hall:</strong> {{player_data.townHallLevel}}</p>
+            <p><strong>Trophies:</strong> {{ player_data.trophies }}</p>
+            <p><strong>Clan:</strong> {{ player_data.clan.name }}</p>
+        <form method="post" action="{% url 'view_player' player_data.tag %}" class="button-form">
+            {% csrf_token %}
+            <input type="hidden" name="clan_tag" value="{{ player_data.tag  }}">
+            <button type="submit" name="view_player" class="view-button">View Player</button>
+        </form>
+
+        {% if saved is True %}
+            <form method="post" action="{% url 'toggle_save_player' player_data.tag  %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ player_data.tag  }}">
+                <button type="submit" name="remove_clan" class="remove-button">Remove Player</button>
+            </form>
+        {% elif saved is False %}
+            <form method="post" action="{% url 'toggle_save_player' player_data.tag  %}" class="button-form">
+                {% csrf_token %}
+                <input type="hidden" name="clan_tag" value="{{ player_data.tag  }}">
+                <button type="submit" name="save_clan" class="save-button">Save Player</button>
+            </form>
+        {% else %}
+            <button name="save_clan" class="save-button" onclick="showConfirmationModal({ type: 'player' });">Save Player</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if error == "clan" %}
+        <div class="alert alert-danger mt-3">
+            <strong>Invalid Clan Tag</strong>
+        </div>
+    {% elif error == "player" %}
+        <div class="alert alert-danger mt-3">
+            <strong>Invalid Player Tag</strong>
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_styles %}
+<style>
+    .clan-search-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-form {
+        margin-bottom: 20px;
+    }
+
+    .search-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .search-form input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .radio-group input[type="radio"] {
+        display: none;
+    }
+
+    .radio-group label {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #007BFF;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .radio-group input[type="radio"]:checked + label {
+        background-color: #0056b3;
+    }
+
+    .radio-group label:hover {
+        background-color: #0056b3;
+    }
+
+    .search-form button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #007BFF;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .search-form button:hover {
+        background-color: #0056b3;
+    }
+
+    .clan-details {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .clan-details h2 {
+        margin-bottom: 15px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .clan-details p {
+        margin: 8px 0;
+        font-size: 16px;
+    }
+
+    .clan-details p strong {
+        color: #007BFF;
+    }
+
+    .button-form {
+        display: inline-block; /* Ensures buttons are side by side */
+        margin-right: 10px; /* Adds space between buttons */
+    }
+
+    .save-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #28a745;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .save-button:hover {
+        background-color: #218838;
+    }
+
+    .remove-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #dc3545;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-button:hover {
+        background-color: #c82333;
+    }
+
+    .view-button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #007BFF;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .view-button:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        padding: 15px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .alert strong {
+        font-weight: bold;
+    }
+</style>
+
+{% include 'main/modal_confirmation.html' %}
+
+<script>
+
+    function showConfirmationModal({
+        type,
+        cancelCallback = () => {}
+    } = {}) {
+        let title = "Log in to Proceed";
+        let message = `Log in to save ${type}s!`;
+        let cancelText = "Okay";
+
+        // Update modal title and body
+        document.getElementById("confirmationModalLabel").innerText = title;
+        document.getElementById("confirmationModalBody").innerText = message;
+
+        // Update button labels
+        const confirmButton = document.getElementById("confirmActionButton");
+        const cancelButton = document.getElementById("cancelButton");
+        cancelButton.innerText = cancelText;
+        confirmButton.classList.add("d-none");
+
+        // Remove existing event listeners to avoid duplicates
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+
+        const newCancelButton = cancelButton.cloneNode(true);
+        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+
+        newCancelButton.addEventListener("click", () => {
+            cancelCallback();
+            $("#confirmationModal").modal("hide");
+        });
+
+        // Show the modal
+        $("#confirmationModal").modal("show");
+    }
+
+
+</script>
+
+{% endblock %}
+{% endblock %}

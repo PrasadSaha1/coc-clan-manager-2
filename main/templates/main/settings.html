@@ -1,0 +1,83 @@
+{% extends 'main/base.html' %}
+
+{% load custom_filters %}
+{% block title %}
+Settings
+{% endblock %}
+<div id="content">
+    {% block content %}
+    <div class="bg-light p-4 rounded shadow-sm">
+        {% if message %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+        <h1 class="text-center">Account Settings</h1>
+        <h3 class="text-center">Logged in as {{ user.username }}</h3>
+        <h3 class="text-center">Email: {{ user.email|format_email:email_level }}</h3>
+
+        <!-- Buttons Section -->
+        <div class="d-flex flex-column align-items-center mt-4">
+            {% if email_level == "None" %}
+                <a href="{% url 'add_email' %}" class="btn btn-primary mb-3">Add Email</a>
+            {% elif email_level == "Unverified" %}
+                <form method="post" action="{% url 'resend_verification_email' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-primary mb-3">Resend verification email</button>
+                </form>
+            {% endif %}
+
+            <a href="{% url 'change_username' %}" class="btn btn-warning mb-3">Change Username</a>
+            <a href="{% url 'change_password' %}" class="btn btn-info mb-3">Change Password</a>
+
+            <div class="my-3"></div>
+
+            <!-- Log Out Button -->
+            <form method="post" action="{% url 'logout_view' %}" onsubmit="return showConfirmationModal('logout');">
+                {% csrf_token %}
+                <button class="btn btn-danger mb-3">Log out</button>
+            </form>
+
+            <form method="post" action="{% url 'delete_account' %}" onsubmit="return showConfirmationModal('delete');">
+                {% csrf_token %}
+                <button class="btn btn-danger mb-3">Delete Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% include 'main/modal_confirmation.html' %}
+
+<script>
+    let actionType = '';
+
+    function showConfirmationModal(action) {
+        actionType = action;
+        let modalMessage = '';
+        
+        if (actionType === 'logout') {
+            modalMessage = 'Are you sure you want to log out?';
+        } else if (actionType === 'delete') {
+            modalMessage = 'Are you sure you want to delete your account? This action is irreversible.';
+        }
+
+        // Set message and show modal
+        document.querySelector('.modal-body').textContent = modalMessage;
+        let confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmationModal.show();
+
+        document.getElementById('cancelButton').onclick = function() {
+            confirmationModal.hide();
+            return false;
+        };
+
+        // Handle confirmation
+        document.getElementById('confirmActionButton').onclick = function() {
+            let form = document.querySelector('form[onsubmit*="' + actionType + '"]');
+            form.submit();
+        };
+
+        return false; // Prevent form submission until confirmation
+    }
+</script>
+{% endblock %}
