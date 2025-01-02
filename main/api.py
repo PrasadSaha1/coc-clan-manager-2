@@ -5,7 +5,7 @@ headers = {
     "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImViNWYyM2ViLWFiMTUtNGVhMi1iMTkwLTY4YzI5ZmVmNzdiNSIsImlhdCI6MTczNTg1MTkwMSwic3ViIjoiZGV2ZWxvcGVyLzYwYjgyNGZhLTBhYjUtZjZhOC04Zjk1LTFkZTY5YTVlYWFlNSIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjE4LjIwNi4xNjUuMTQyIiwiNjcuODMuMjAyLjEzMCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.egshJnhxYrlNOKVqVgcxMrGiSQ_ZaKDmDHoers6UwDildhazAAZX4xdEH_DtlJjoTwHCvUUd7GahWY050W2IRA"
 }
 
-def find_clan_with_tag(clan_tag, information):
+def find_clan_with_tag(clan_tag, information=[]):
     response = requests.get(f"https://api.clashofclans.com/v1/clans/%23{clan_tag}", headers=headers)
     response_json = response.json()
 
