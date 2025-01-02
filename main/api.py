@@ -12,7 +12,7 @@ def find_clan_with_tag(clan_tag, information=[]):
     information_to_export = []
     for info in information:
         information_to_export.append(response_json[info])
-    return information_to_export
+    return response_json
 
 def get_clan_badge(clan_tag):
     response = requests.get(f"https://api.clashofclans.com/v1/clans/%23{clan_tag}", headers=headers)
