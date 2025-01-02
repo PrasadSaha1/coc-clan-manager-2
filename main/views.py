@@ -106,9 +106,9 @@ def clan_search(request):
     in_database = "not_logged_in"
     if request.method == "POST":
         search_type = request.POST.get("search_type") 
-        raise ValueError(f"Invalid search type: {search_type}")
         if search_type == "clan":
             old_tag = clean_tag(request.POST.get("clan_tag"))
+            raise ValueError(f"Invalid search type: {old_tag}")
             try:
                 clan_name, clan_tag, clan_type, clan_description, clan_members, clan_points = find_clan_with_tag(old_tag, ["name", "tag", "type", "description", "members", "clanPoints"])
                 clan_badge = get_clan_badge(old_tag)
