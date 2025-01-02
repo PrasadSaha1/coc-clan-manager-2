@@ -23,21 +23,21 @@ def clean_tag(tag):
     return tag.replace("#", "").strip().upper()
 
 def get_member_data(clan_tag):
-    response = requests.get(f"https://api.clashofclans.com/v1/clans/%23{clan_tag}/members", headers=headers)
+    response = requests.get(f"https://cocproxy.royaleapi.dev/v1/clans/%23{clan_tag}/members", headers=headers)
     response_json = response.json()
     return response_json
 
 def get_all_clan_data(clan_tag):
-    response = requests.get(f"https://api.clashofclans.com/v1/clans/%23{clan_tag}", headers=headers)
+    response = requests.get(f"https://cocproxy.royaleapi.dev/v1/clans/%23{clan_tag}", headers=headers)
     response_json = response.json()
     return response_json
 
 def get_all_player_data(player_tag):
-    response = requests.get(f"https://api.clashofclans.com/v1/players/%23{player_tag}", headers=headers)
+    response = requests.get(f"https://cocproxy.royaleapi.dev/v1/players/%23{player_tag}", headers=headers)
     response_json = response.json()
     return response_json
 
 def get_clan_war_information(clan_tag):
-    response = requests.get(f"https://api.clashofclans.com/v1/clans/%23{clan_tag}/currentwar", headers=headers)
+    response = requests.get(f"https://cocproxy.royaleapi.dev/v1/clans/%23{clan_tag}/currentwar", headers=headers)
     response_json = response.json()
     return response_json
