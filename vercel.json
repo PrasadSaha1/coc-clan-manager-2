@@ -1,4 +1,10 @@
 {
+  "builds": [
+    {
+      "src": "COC_app/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
       "src": "/(.*)",
