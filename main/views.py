@@ -109,7 +109,7 @@ def clan_search(request):
         if search_type == "clan":
             old_tag = clean_tag(request.POST.get("clan_tag"))
             try:
-                raise ValueError(f"Invalid search type: {find_clan_with_tag(old_tag)}")
+                # raise ValueError(f"Invalid search type: {find_clan_with_tag(old_tag)}")
                 clan_name, clan_tag, clan_type, clan_description, clan_members, clan_points = find_clan_with_tag(old_tag, ["name", "tag", "type", "description", "members", "clanPoints"])
                 clan_badge = get_clan_badge(old_tag)
                 if request.user.is_authenticated:
