@@ -105,8 +105,8 @@ def resend_verification_email(request):
 def clan_search(request):
     in_database = "not_logged_in"
     if request.method == "POST":
-        raise ValueError
         search_type = request.POST.get("search_type") 
+        raise ValueError(f"Invalid search type: {search_type}")
         if search_type == "clan":
             old_tag = clean_tag(request.POST.get("clan_tag"))
             try:
