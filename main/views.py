@@ -111,6 +111,7 @@ def clan_search(request):
             try:
                 clan_name, clan_tag, clan_type, clan_description, clan_members, clan_points = find_clan_with_tag(old_tag, ["name", "tag", "type", "description", "members", "clanPoints"])
                 clan_badge = get_clan_badge(old_tag)
+                raise ValueError
                 if request.user.is_authenticated:
                     if SavedClan.objects.filter(user=request.user, clan_tag=old_tag).first():
                         in_database = True
