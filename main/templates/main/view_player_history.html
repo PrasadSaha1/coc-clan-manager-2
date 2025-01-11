@@ -45,6 +45,7 @@ History for {{player.name}}
                 <div>
                     <h2 style="margin-bottom: 20px;" class="collapsible" onclick="toggleCollapse('heroes_{{ record.time_fetched|slugify }}')">Heroes (click to expand)</h2>
                     <div id="heroes_{{ record.time_fetched|slugify }}" class="collapsible-content">
+                        <h6>Green means that the hero is maxed for the town/builder hall. Red means that they are rushed. </h6>
                         <table id="sortableTable" class="sortable-table">
                             <thead>
                                 <tr>
@@ -279,6 +280,11 @@ History for {{player.name}}
         border-radius: 5px;
         margin-top: 20px;
     }
+
+    h6{
+            text-align: center;
+            color: white;
+        }
 
     .alert-success {
         background-color: #d4edda;  /* Light green background */
