@@ -94,6 +94,8 @@ DATABASES = {
         "NAME": "COC_app",
         "USER": "postgres",
         "PASSWORD": "digmines",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
