@@ -1,24 +1,22 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "COC_app/wsgi.py",
       "use": "@vercel/python"
-    }, {
-      "src": "build.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles"
-      }
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "COC_app/wsgi.py"
+      "src": "/static/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/static/$1"
     },
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "src": "/(.*)",
+      "dest": "COC_app/wsgi.py"
     }
   ]
 }
