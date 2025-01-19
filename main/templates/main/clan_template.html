@@ -1,0 +1,47 @@
+<div class="clan-container">
+    <div class="clan-info left">
+        <img src="{{ clan.badgeUrls.medium }}" alt="{{ clan.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+        <h1>{{ clan.name }}</h1>
+        <h4><strong>Tag:</strong> {{ clan.tag }}</h4>
+        <h4><strong>Attacks:</strong> {{ clan.attacks }}</h4>
+        <h4><strong>Stars:</strong> {{ clan.stars }}</h4>
+        <h4><strong>Total Destruction:</strong> {{ clan.destructionPercentage|floatformat:2 }}%</h4>
+    </div>
+    
+    <div class="clan-info right">
+        <img src="{{ opponent.badgeUrls.medium }}" alt="{{ opponent.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+        <h1>{{ opponent.name }}</h1>
+        <h4><strong>Tag:</strong> {{ opponent.tag }}</h4>
+        <h4><strong>Attacks:</strong> {{ opponent.attacks }}</h4>
+        <h4><strong>Stars:</strong> {{ opponent.stars }}</h4>
+        <h4><strong>Total Destruction:</strong> {{ opponent.destructionPercentage|floatformat:2 }}%</h4>
+    </div>
+</div>
+<h2 style="margin-bottom: 20px;" class="collapsible" onclick="toggleCollapse('members_{{war.0.endTime|slugify}}')">Member Data (click to expand)</h2>
+<div id="members_{{war.0.endTime|slugify}}" class="collapsible-content">
+    <table id="sortableTable" class="sortable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 1)">Tag <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 2)">Roster Number <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 3)">Number of Attacks <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 4)">Stars <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 5)">Destruction <span class="sort-arrow"></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in clan.members %}
+                <tr>
+                    <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                    <td>{{member.tag}}</td>
+                    <td>{{member.mapPosition}}</td>
+                    <td>{{member.attacks|length}}</td>
+                    <td>{{ member.attacks.0.stars|default:0 }}</td>
+                    <td>{{ member.attacks.0.destructionPercentage|default:0 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>
+    

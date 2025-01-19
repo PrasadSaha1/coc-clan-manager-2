@@ -9,7 +9,9 @@ from .models import (
     GlobalClan,
     ClanWarInformation,
     ClanMonthlyDataGeneral,
-    ClanMonthlyDataWar
+    ClanMonthlyDataWar,
+    CWLGroupData,
+    ClanCWLInformation
 )
 
 # Registering each model individually
@@ -23,3 +25,5 @@ admin.site.register(GlobalClan)
 admin.site.register(ClanWarInformation)
 admin.site.register(ClanMonthlyDataGeneral)
 admin.site.register(ClanMonthlyDataWar)
+admin.site.register(CWLGroupData)
+admin.site.register(ClanCWLInformation)

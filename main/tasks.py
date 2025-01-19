@@ -1,8 +1,8 @@
 from celery import shared_task, group
 import logging
 from datetime import datetime, timedelta, date
-from .models import GlobalPlayer, PlayerMonthlyData, GlobalClan, ClanWarInformation, ClanMonthlyDataWar, PlayerWarInformation, PlayerMonthlyDataWar, ClanMonthlyDataGeneral
-from .api import clean_tag, get_all_player_data, get_clan_war_information, get_all_clan_data
+from .models import GlobalPlayer, PlayerMonthlyData, GlobalClan, ClanWarInformation, ClanMonthlyDataWar, PlayerWarInformation, PlayerMonthlyDataWar, ClanMonthlyDataGeneral, CWLGlobalClan, CWLGroupData
+from .api import clean_tag, get_all_player_data, get_clan_war_information, get_all_clan_data, get_CWL_group_information
 import time
 import pytz
 from django.db import transaction
@@ -298,4 +298,35 @@ def end_of_trophy_season_updates():
     get_monthly_clan_general_info()
     update_player_history()
 
+@shared_task
+def get_CWL_war_tags(day):
+    if day == 4:
+        clans = GlobalClan.objects.all()
+        for clan in clans:
+            CWLGlobalClan.objects.create(clan_tag=str(clan))
+    clans = CWLGlobalClan.objects.all()
 
+    dont_include_daily = set()
+    dont_include_at_all = set()
+
+    for clan in clans:
+        if clean_tag(clan.clan_tag) not in dont_include_daily:
+            try:
+                group_info = get_CWL_group_information(clan.clan_tag)
+                clan_tags = {clean_tag(clan_["tag"]) for clan_ in group_info["clans"]}  # Use a set for unique tags
+                dont_include_daily.update(clan_tags)  # Add all tags to dont_include in one operation
+                
+                if group_info["rounds"][-1]["warTags"][-1] != "#0":
+                    CWLGroupData.objects.create(group_data=group_info)
+                    dont_include_at_all.update(clan_tags)
+            except KeyError:
+                continue
+    
+    CWLGlobalClan.objects.filter(clan_tag__in=dont_include_at_all).delete()
+
+    if day == 10:
+        CWLGlobalClan.objects.all().delete()
+
+@shared_task
+def process_CWL_information():
+    pass

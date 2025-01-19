@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, time
+from django.contrib.postgres.fields import ArrayField
 
 class SavedClan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_clans')
@@ -66,6 +67,9 @@ class GlobalClan(models.Model):
     def __str__(self):
         return self.clan_tag
 
+class CWLGlobalClan(models.Model):
+    clan_tag = models.CharField(max_length=20, unique=True)
+
 class ClanWarInformation(models.Model):
     clan = models.ForeignKey(GlobalClan, on_delete=models.CASCADE, related_name='war_information')
     current_time = models.CharField(default="N/A", max_length=50)
@@ -97,3 +101,27 @@ class ClanMonthlyDataWar(models.Model):
 
     month_year = models.DateField(default=date.today)
     current_time = models.CharField(max_length=50, default="N/A")
+
+class CWLGroupData(models.Model):
+    group_data = models.JSONField(default=list)
+    league = models.CharField(max_length=50, default="None")
+    month_year = models.CharField(max_length=20, default="None")
+
+class ClanCWLInformation(models.Model):
+    clan = models.ForeignKey(GlobalClan, on_delete=models.CASCADE, related_name='cwl_information')
+    league = models.CharField(max_length=50, default="None")
+    month_year = models.CharField(max_length=20, default="None")
+    
+    placement = models.IntegerField(default=0)
+    all_clan_placement = models.JSONField(default=list)
+
+    stars = models.IntegerField(default=0)
+    percent = models.FloatField(default=0)
+
+    each_war_data = ArrayField(
+        models.JSONField(),  # Each element in the array is a JSON object
+        blank=True,
+        default=list
+    )
+
+    member_data = models.JSONField(default=list)

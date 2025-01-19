@@ -6,12 +6,16 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from .forms import ChangeUsernameForm, ChangePasswordForm, AddEmailForm
 from main.api import find_clan_with_tag, get_clan_badge, clean_tag, get_member_data, get_all_clan_data, get_all_player_data
-from .models import SavedClan, SavedPlayer, GlobalPlayer, GlobalClan
+from .models import SavedClan, SavedPlayer, GlobalPlayer, GlobalClan, ClanCWLInformation, CWLGroupData
 from main.api import *
 from .helpers import determine_email_level
 from register.send_emails import send_verification_email
 
 def home(request):
+    # get_CWL_war_tags(4)
+    # ClanCWLInformation.objects.all().delete()
+    # CWLGroupData.objects.all().delete()
+    # process_CWL_information()
     context = {
         'is_logged_in': request.user.is_authenticated,
         'user': request.user if request.user.is_authenticated else None,
@@ -285,7 +289,6 @@ def view_player(request, player_tag):
     save_player = request.POST.get('save_player', 'no')
     unsave_player = request.POST.get('unsave_player', 'no')
     start_tracking_player = request.POST.get('start_tracking_player', 'no')
-    print(save_player, unsave_player, start_tracking_player)
     if start_tracking_player == "yes":
         new_player = GlobalPlayer(player_tag=clean_tag(player_tag))
         new_player.save() 
@@ -343,6 +346,9 @@ def view_clan_war_history(request, clan_tag):
     clan_war_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
     monthly_data_war = clan_war_history.monthly_data_war.all()[::-1]
     each_war_data = clan_war_history.war_information.all()[::-1]
+
+
+    CWL_information = clan_war_history.cwl_information.all()[::-1]
     if len(each_war_data) == 0:
         each_war_data = "N/A"
     
@@ -358,6 +364,7 @@ def view_clan_war_history(request, clan_tag):
         player, created = GlobalPlayer.objects.get_or_create(player_tag=player_tag)
         for month in player.monthly_data_war.all():
             summary_member_data.append(month)
+    print(CWL_information[0].member_data)
 
 
     return render(request, "main/view_clan_war_history.html", {
@@ -368,5 +375,27 @@ def view_clan_war_history(request, clan_tag):
         "type_of_data": type_of_data,
         "include_member_data": include_member_data,
         "summary_member_data": summary_member_data,
+        "CWL_information": CWL_information,
     })
 
+
+def view_CWL_war(request, clan_tag, month):
+    clan_war_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
+    CWL_information = clan_war_history.cwl_information.all()[::-1]
+    for record in CWL_information:
+        if record.month_year == month:
+            old_war_info = record
+            month_year = old_war_info.month_year
+            break
+    clan_name = get_all_clan_data(clean_tag(clan_tag))["name"]
+    old_war_info = old_war_info.each_war_data
+
+    war_info = []
+    for war in old_war_info:
+        if clean_tag(war["clan"]["tag"]) == clean_tag(clan_tag):
+            persp = "clan"
+        else:
+            persp = "opponent"
+        war_info.append((war, persp))
+
+    return render(request, "main/view_CWL_war.html", {"war_info": war_info, "clan_name": clan_name, "month_year": month_year, "clan_tag": clan_tag})

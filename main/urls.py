@@ -21,4 +21,5 @@ urlpatterns = [
     path("view_player_history/<player_tag>", views.view_player_history, name="view_player_history"),
     path("view_clan_general_history/<clan_tag>", views.view_clan_general_history, name="view_clan_general_history"),
     path("view_clan_war_history/<clan_tag>", views.view_clan_war_history, name="view_clan_war_history"),
+    path("view_CWL_war/<clan_tag>/<month>", views.view_CWL_war, name="view_CWL_war"),
 ]

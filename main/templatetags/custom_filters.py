@@ -304,3 +304,30 @@ def fetch_player_name(tag):
     # Retrieve the latest monthly data for the player
     monthly_data = PlayerMonthlyData.objects.filter(player=data).last()
     return monthly_data.data["name"]
+
+# Custom filter for formatting month_year (e.g., "01-2025" to "January 2025")
+@register.filter
+def month_year_format(month_year):
+    print(month_year)
+    try:
+        # Parse the input string in the format "MM-YYYY"
+        date_obj = datetime.strptime(month_year, "%m_%Y")
+        # Format it as "Month Year" (e.g., "January 2025")
+        return date_obj.strftime("%B %Y")
+    except ValueError:
+        return month_year  # Return the original string if parsing fails
+
+
+# Custom filter for formatting place (e.g., 1 to "1st", 2 to "2nd")
+@register.filter
+def place_format(place):
+    # Define suffixes for 1st, 2nd, 3rd, etc.
+    suffixes = ['st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th']
+    
+    try:
+        place = int(place)
+        if place < 1 or place > 8:
+            return str(place)  # For values greater than 8, just return the number
+        return f"{place}{suffixes[place-1]}"
+    except ValueError:
+        return place  # Return the original value if it's not a valid integer
