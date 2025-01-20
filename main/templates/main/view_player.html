@@ -233,7 +233,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for equipment in player.heroEquipment|sort_equipment:player %}
+                        {% for equipment in player.heroEquipment %}
                         <tr data-in-use="{{ equipment.name| check_in_use_1:player }}">
                             <td>
                                 <img src="{% static 'images/'|add:equipment.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 150px;">
