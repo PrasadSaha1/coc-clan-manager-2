@@ -278,22 +278,17 @@ def view_player(request, player_tag):
     is_saved = "not_logged_in"
     change = None
     player = get_all_player_data(clean_tag(player_tag))
-    # is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
-    is_being_tracked = False
-    """
+    is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
     if request.user.is_authenticated:
         saved_player_count = SavedPlayer.objects.filter(user=request.user).count()
         if SavedPlayer.objects.filter(user=request.user, player_tag=clean_tag(player_tag)).first():
             is_saved = True
         else:
             is_saved = False
-    """
 
     save_player = request.POST.get('save_player', 'no')
     unsave_player = request.POST.get('unsave_player', 'no')
     start_tracking_player = request.POST.get('start_tracking_player', 'no')
-
-    """
     if start_tracking_player == "yes":
         new_player = GlobalPlayer(player_tag=clean_tag(player_tag))
         new_player.save() 
@@ -311,7 +306,6 @@ def view_player(request, player_tag):
         old_player.delete()
         change = "player_removed"
         is_saved = False
-    """
     return render(request, "main/view_player.html", {"player": player, "is_being_tracked": is_being_tracked, "is_saved": is_saved, "change": change})
 
 

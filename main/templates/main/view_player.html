@@ -31,7 +31,7 @@
 
     {% if not is_being_tracked %}
         <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
-            <form method="post" action="{% url 'home' %}" class="button-form">
+            <form method="post" action="{% url 'view_player' player.tag %}" class="button-form">
                 {% csrf_token %}
                 <input type="hidden" name="player_tag" value="{{ player.tag }}">
                 <button type="submit" name="start_tracking_player" value="yes" class="btn btn-primary">Start Tracking Player's History</button>
@@ -40,7 +40,7 @@
     {% else %}
         <h4>This Player's history is currently being tracked</h4>
         <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
-            <form method="post" action="{% url 'home' %}" class="button-form">
+            <form method="post" action="{% url 'view_player_history' player.tag %}" class="button-form">
                 {% csrf_token %}
                 <input type="hidden" name="player_tag" value="{{ player.tag }}">
                 <button type="submit" name="view_player_history" class="btn btn-primary">View Player History</button>
@@ -50,7 +50,7 @@
 
     {% if is_saved is True %}
         <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
-            <form method="post" action="{% url 'home' %}" class="button-form">
+            <form method="post" action="{% url 'view_player' player.tag %}" class="button-form">
                 {% csrf_token %}
                 <input type="hidden" name="player_tag" value="{{ player.tag }}">
                 <button type="submit" name="unsave_player" class="btn btn-primary" value="yes">Unsave Player</button>
@@ -58,7 +58,7 @@
         </div>
     {% elif is_saved is False %}
     <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
-        <form method="post" action="{% url 'home' %}" class="button-form">
+        <form method="post" action="{% url 'view_player' player.tag %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="player_tag" value="{{ player.tag }}">
             <button type="submit" name="save_player" class="btn btn-primary" value="yes">Save Player</button>
@@ -233,7 +233,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for equipment in player.heroEquipment %}
+                        {% for equipment in player.heroEquipment|sort_equipment:player %}
                         <tr data-in-use="{{ equipment.name| check_in_use_1:player }}">
                             <td>
                                 <img src="{% static 'images/'|add:equipment.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 150px;">
@@ -257,7 +257,7 @@
                 <h2 style="margin-bottom: 20px;" class="collapsible" onclick="toggleCollapse('Other Units')">Other Units (click to expand)</h2>
                 <div id="Other Units" class="collapsible-content">                
                     <h4>Troops (Home Village)</h4>
-                    {% for troop in player.troops %}
+                    {% for troop in player.troops|filter_until_lassi %}
                         {% if troop.village == "home" and troop.name|does_not_start_with:"Super" and troop.name|not_in:"Sneaky Goblin,Rocket Balloon,Inferno Dragon,Ice Hound" and troop.name|not_in:"Wall Wrecker,Battle Blimp,Stone Slammer,Siege Barracks,Battle Drill,Flame Flinger,Log Launcher" %}
                         <div style="position: relative; display: inline-block;">
                             <img src="{% static 'images/Avatar_'|add:troop.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 75px; max-height: 75px;" title="{{ troop.name }}">
@@ -299,7 +299,7 @@
                         {% endif %}
                     {% endfor %}
                     <h4>Pets</h4>
-                    {% for troop in player.troops %}
+                    {% for troop in player.troops|filter_from_lassi %}
                     {% if troop.village == "home" and troop.name|does_not_start_with:"Super" and troop.name|not_in:"Sneaky Goblin,Rocket Balloon,Inferno Dragon,Ice Hound" and troop.name|not_in:"Wall Wrecker,Battle Blimp,Stone Slammer,Siege Barracks,Battle Drill,Flame Flinger,Log Launcher" %}
                         <div style="position: relative; display: inline-block;">
                             <img src="{% static 'images/Avatar_'|add:troop.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 75px; max-height: 75px;" title="{{ troop.name }}">
