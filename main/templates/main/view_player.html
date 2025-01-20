@@ -257,7 +257,7 @@
                 <h2 style="margin-bottom: 20px;" class="collapsible" onclick="toggleCollapse('Other Units')">Other Units (click to expand)</h2>
                 <div id="Other Units" class="collapsible-content">                
                     <h4>Troops (Home Village)</h4>
-                    {% for troop in player.troops|filter_until_lassi %}
+                    {% for troop in player.troops %}
                         {% if troop.village == "home" and troop.name|does_not_start_with:"Super" and troop.name|not_in:"Sneaky Goblin,Rocket Balloon,Inferno Dragon,Ice Hound" and troop.name|not_in:"Wall Wrecker,Battle Blimp,Stone Slammer,Siege Barracks,Battle Drill,Flame Flinger,Log Launcher" %}
                         <div style="position: relative; display: inline-block;">
                             <img src="{% static 'images/Avatar_'|add:troop.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 75px; max-height: 75px;" title="{{ troop.name }}">
@@ -299,7 +299,7 @@
                         {% endif %}
                     {% endfor %}
                     <h4>Pets</h4>
-                    {% for troop in player.troops|filter_from_lassi %}
+                    {% for troop in player.troops %}
                     {% if troop.village == "home" and troop.name|does_not_start_with:"Super" and troop.name|not_in:"Sneaky Goblin,Rocket Balloon,Inferno Dragon,Ice Hound" and troop.name|not_in:"Wall Wrecker,Battle Blimp,Stone Slammer,Siege Barracks,Battle Drill,Flame Flinger,Log Launcher" %}
                         <div style="position: relative; display: inline-block;">
                             <img src="{% static 'images/Avatar_'|add:troop.name|replace_space_with_underscore|add:'.webp' %}" style="max-width: 75px; max-height: 75px;" title="{{ troop.name }}">
