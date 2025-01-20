@@ -90,10 +90,23 @@ WSGI_APPLICATION = 'COC_app.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+"""
+
+DATABASES = {
+    "default":{
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "COC_app",
+        "USER": "postgres",
+        "PASSWORD": "digmines",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
