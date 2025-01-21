@@ -151,7 +151,7 @@ Clan War History for {{clan.name}}
                         <div>
                         <h2>{{ record.month_year|date:"F Y" }}</h2>
                         <p><strong>Number of Wars:</strong> {{ record.num_wars|floatformat:0 }}</p>
-                        <p><strong>Win rate:</strong> {{ record.win_rate|mul:100|floatformat:2 }}%</p>
+                        <p><strong>Win rate:</strong> {{ record.win_rate|mul:100|floatformat:2 }}% ({{record.num_wins}} wins, {{record.num_losses}} losses, {{record.num_draws}} draws)</p>
                         <p><strong>Percent of Attacks Completed:</strong> {{ record.percent_attacks_completed|mul:100|floatformat:2 }}%</p>
                         <p><strong>Average War Size:</strong> {{ record.average_war_size|floatformat:2 }}</p>
                         <p><strong>Average Total Destruction:</strong> {{ record.average_total_destruction|floatformat:2 }}%</p>
@@ -162,13 +162,13 @@ Clan War History for {{clan.name}}
                         <table id="sortableTable_regular_summary_{record.month_year}" class="sortable-table">
                             <thead>
                                 <tr>
-                                    <th onclick="sortTable('string', 0, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Name <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('string', 1, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Tag <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 2, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Number of Wars <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 3, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Number of Attacks <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 4, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Number of Missed Attacks <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 5, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Average Stars per Attack <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 6, 'sortableTable_regular_summary_{record.month_year}', 'desc')">Average Destruction per Attack <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('string', 0, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`, 'desc')">Name <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('string', 1, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Tag <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 2, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Number of Wars <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 3, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Number of Attacks <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 4, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Number of Missed Attacks <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 5, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Average Stars per Attack <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 6, `sortableTable_regular_summary_{{ record.month_year|date:'M' }}_{{ record.month_year|date:'Y' }}`,  'desc')">Average Destruction per Attack <span class="sort-arrow"></span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -571,8 +571,7 @@ Clan War History for {{clan.name}}
         defaultRowType = "{{ 'int'|escapejs }}";
         sortDirection = "{{ 'asc'|escapejs }}";
     }
-    console.log(defaultRow)
-
+    
 </script>
 <script src="{% static 'js/sortTable.js' %}"></script>
    {% endblock %}
@@ -580,17 +579,41 @@ Clan War History for {{clan.name}}
 <script>
     function onLoad(){
         if("{{type_of_war}}" === "regular" && "{{type_of_data}}" === "summary"){
-            resetTableToDefault("sortableTable_regular_summary_{record.month_year}", "desc");
+            resetTableToDefault("sortableTable_regular_summary_12_2024", "desc");
         }
         if("{{type_of_war}}" === "regular" && "{{type_of_data}}" === "in-depth"){
-            resetTableToDefault("sortableTable_20241229T014225.000Z", "asc");
+            var startTimes = "{{each_war_start_times}}"
+            startTimes = startTimes.replace(/&#x27;/g, "'");
+            const arr = JSON.parse(startTimes.replace(/'/g, '"'));
+
+            for (let i = 0; i < arr.length; i++) {
+                resetTableToDefault(`sortableTable_${arr[i]}`, "asc");
+            }
         }
         if("{{type_of_war}}" === "cwl"){
+            var startTimes = "{{month_years}}"
+            startTimes = startTimes.replace(/&#x27;/g, "'");
+            const arr = JSON.parse(startTimes.replace(/'/g, '"'));
+
+            for (let i = 0; i < arr.length; i++) {
+                console.log(`sortableTable_overview_${arr[i]}`)
+
+                resetTableToDefault(`sortableTable_overview_${arr[i]}`, "asc");
+                resetTableToDefault(`sortableTable_members_${arr[i]}`, "asc");
+                console.log(arr[i], i);
+            }
+            
             resetTableToDefault("sortableTable_overview_01_2025", "asc");
             resetTableToDefault("sortableTable_members_01_2025", "asc");
         }
-        
 
+        var startTimes = "{{each_war_start_times}}"
+        startTimes = startTimes.replace(/&#x27;/g, "'");
+        const arr = JSON.parse(startTimes.replace(/'/g, '"'));
+
+        for (let i = 0; i < arr.length; i++) {
+            resetTableToDefault(`sortableTable_${arr[i]}`, "asc");
+            }
         // 
     }
 

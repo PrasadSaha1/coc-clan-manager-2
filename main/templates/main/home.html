@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block title %}
 Home
@@ -7,8 +8,8 @@ Home
 <div id="content">
     {% block content %}
     <div>
-        <h1 style="text-align: center;">Welcome to the Website</h1>
-        <h3 style="text-align: center;">This is the website description</h3>
+        <h1 style="text-align: center;">Welcome to the COC Clan Manager</h1>
+        <h3 style="text-align: center;">Manage your clan with detailed clan, war, and player statistics</h3>
     </div>
 
     {% if is_logged_in is False %}
@@ -27,32 +28,31 @@ Home
 
     <!-- Features Section -->
     <div class="features-section mt-5">
-        <h2 style="text-align: center; margin-top: 50px;">Explore Our Features</h2>
 
         <!-- Feature 1 -->
         <div class="d-flex align-items-center justify-content-between mt-4">
-            <img src="https://picsum.photos/200" alt="Feature 1" class="img-fluid rounded" style="width: 40%;">
+            <img src="{% static 'images/COC_Website_Image_3.png' %}" alt="Feature 1" class="img-fluid rounded" style="width: 55%; height: auto;">
             <div class="text-content ms-4" style="width: 55%;">
-                <h3>Feature 1</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ac eros vel lacus dignissim volutpat.</p>
+                <h3>Clan War Tracker</h3>
+                <p>View Information about each Clan War</p>
             </div>
         </div>
 
         <!-- Feature 2 -->
         <div class="d-flex align-items-center justify-content-between mt-4 flex-row-reverse">
-            <img src="https://picsum.photos/200" alt="Feature 2" class="img-fluid rounded" style="width: 40%;">
+            <img src="{% static 'images/COC_Website_Image_1.png' %}" alt="Feature 2" class="img-fluid rounded" style="width: 60%;">
             <div class="text-content me-4" style="width: 55%;">
-                <h3>Feature 2</h3>
-                <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Curabitur blandit tempus porttitor.</p>
+                <h3>Member Trends</h3>
+                <p>View Summaries of Member War Performance</p>
             </div>
         </div>
 
         <!-- Feature 3 -->
         <div class="d-flex align-items-center justify-content-between mt-4">
-            <img src="https://picsum.photos/200" alt="Feature 3" class="img-fluid rounded" style="width: 40%;">
+            <img src="{% static 'images/COC_Website_Image_3.png' %}" alt="Feature 3" class="img-fluid rounded" style="width: 55%;">
             <div class="text-content ms-4" style="width: 55%;">
-                <h3>Feature 3</h3>
-                <p>Aenean lacinia bibendum nulla sed consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                <h3>Player History</h3>
+                <p>View Player History from each month to track activity</p>
             </div>
         </div>
     </div>

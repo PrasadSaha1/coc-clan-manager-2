@@ -364,15 +364,22 @@ def view_clan_war_history(request, clan_tag):
         player, created = GlobalPlayer.objects.get_or_create(player_tag=player_tag)
         for month in player.monthly_data_war.all():
             summary_member_data.append(month)
-    print(CWL_information[0].member_data)
-
+    
+    each_war_start_times = []
+    month_years = []
+    for war in each_war_data:
+        each_war_start_times.append(war.war_info["preparationStartTime"])
+    for month in CWL_information:
+        month_years.append(month.month_year)
 
     return render(request, "main/view_clan_war_history.html", {
         "clan": clan,
         "monthly_data_war": monthly_data_war,
         "each_war_data": each_war_data,
+        "each_war_start_times": each_war_start_times,
         "type_of_war": type_of_war,
         "type_of_data": type_of_data,
+        "month_years": month_years,
         "include_member_data": include_member_data,
         "summary_member_data": summary_member_data,
         "CWL_information": CWL_information,
@@ -397,5 +404,7 @@ def view_CWL_war(request, clan_tag, month):
         else:
             persp = "opponent"
         war_info.append((war, persp))
+
+
 
     return render(request, "main/view_CWL_war.html", {"war_info": war_info, "clan_name": clan_name, "month_year": month_year, "clan_tag": clan_tag})

@@ -32,15 +32,15 @@ app.conf.beat_schedule = {
 app.conf.beat_schedule = {
     'fetch-clan-war-status': {
         'task': 'main.tasks.get_clan_war_status',  # Update to the correct task path
-        'schedule': crontab(minute=0, hour=22, day_of_month=30),
+        'schedule': crontab(minute=0, hour=15, day_of_month=20),
     },
     'end-of-trophy-season-updates': {
         'task': 'main.tasks.end_of_trophy_season_updates',
-        'schedule': crontab(minute=2, hour=22, day_of_month=30),
+        'schedule': crontab(minute=8, hour=15, day_of_month=20),
     },
     'get-monthly-clan-war-info': {
         'task': 'main.tasks.get_monthly_clan_war_info',
-        'schedule': crontab(minute=2, hour=22, day_of_month=30),
+        'schedule': crontab(minute=46, hour=14, day_of_month=20),
     },
 }
 # Optional: to use timezone-aware scheduling

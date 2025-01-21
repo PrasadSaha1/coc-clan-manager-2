@@ -53,6 +53,15 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 # set the celery timezone
 CELERY_TIMEZONE = 'America/New_York'
 
+"""
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis server URL
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Redis backend for storing results
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'EST'  # Or set your preferred timezone
+"""
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",

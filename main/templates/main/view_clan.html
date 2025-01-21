@@ -140,11 +140,11 @@
         <thead>
             <tr>
                 {% if mode == "general" %}
-                    <th onclick="sortTable('string', 0)">Name <span class="sort-arrow"></span></th>
-                    <th onclick="sortTable('string', 1)">Tag <span class="sort-arrow"></span></th>
-                    <th onclick="sortTable('role', 2)">Role <span class="sort-arrow"></span></th>
-                    <th onclick="sortTable('int', 3)">Donations <span class="sort-arrow"></span></th>
-                    <th onclick="sortTable('int', 4)">Donations Recieved <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 0, 'sortableTable', 'asc')">Name <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('string', 1, 'sortableTable', 'asc')">Tag <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('role', 2, 'sortableTable', 'asc')">Role <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 3, 'sortableTable', 'asc')">Donations <span class="sort-arrow"></span></th>
+                    <th onclick="sortTable('int', 4, 'sortableTable', 'asc')">Donations Recieved <span class="sort-arrow"></span></th>
                 {% elif mode == "home_village" %}
                     <th onclick="sortTable('none', 0)">Badge <span class="sort-arrow"></span></th>
                     <th onclick="sortTable('string', 1)">Name <span class="sort-arrow"></span></th>
@@ -241,7 +241,7 @@
       
 
         // Initialize the table to be sorted by Trophies in descending order on page load
-        window.onload = resetTableToDefault();
+        window.onload = resetTableToDefault("sortableTable", "asc");
     </script>
 
     <style>

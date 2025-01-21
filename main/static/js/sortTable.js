@@ -125,7 +125,7 @@ function sortTable(sortingType, row, tableName = "sortableTable", directon="desc
 }
 
 function resetTableToDefault(tableName = "sortableTable", direction="desc") {
-    console.log(defaultRow, defaultRowType)
+    console.log(tableName)
     /*
     if (mode === "general") {
         defaultRow = 2;

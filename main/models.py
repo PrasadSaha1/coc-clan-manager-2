@@ -86,6 +86,10 @@ class ClanMonthlyDataGeneral(models.Model):
 class ClanMonthlyDataWar(models.Model):
     clan = models.ForeignKey(GlobalClan, on_delete=models.CASCADE, related_name='monthly_data_war')
 
+    num_wins = models.IntegerField(default=0)
+    num_losses = models.IntegerField(default=0)
+    num_draws = models.IntegerField(default=0)
+
     num_wars = models.FloatField(default=0.0)
     total_players = models.FloatField(default=0.0)
     total_stars = models.FloatField(default=0.0)
@@ -99,6 +103,46 @@ class ClanMonthlyDataWar(models.Model):
     win_rate = models.FloatField(default=0.0)
     percent_attacks_completed = models.FloatField(default=0.0)
 
+    month_year = models.DateField(default=date.today)
+    current_time = models.CharField(max_length=50, default="N/A")
+
+class ClanLastFiveWars(models.Model):
+    clan = models.ForeignKey(GlobalClan, on_delete=models.CASCADE, related_name='last_five_wars')
+
+    num_wins = models.IntegerField(default=0)
+    num_losses = models.IntegerField(default=0)
+    num_draws = models.IntegerField(default=0)
+
+    num_wars = models.FloatField(default=0.0)
+    total_players = models.FloatField(default=0.0)
+    total_stars = models.FloatField(default=0.0)
+    total_destruction = models.FloatField(default=0.0)
+
+    average_war_size = models.FloatField(default=0.0)
+    average_total_stars = models.FloatField(default=0.0)
+    average_stars_per_player = models.FloatField(default=0.0)
+    average_total_destruction = models.FloatField(default=0.0)
+
+    win_rate = models.FloatField(default=0.0)
+    percent_attacks_completed = models.FloatField(default=0.0)
+
+    month_year = models.DateField(default=date.today)
+    current_time = models.CharField(max_length=50, default="N/A")
+
+class PlayerLastFiveWars(models.Model):
+    """Assumes a player does not change clan"""
+    player = models.ForeignKey(GlobalPlayer, on_delete=models.CASCADE, related_name='last_five_wars')
+
+    num_wars = models.IntegerField()
+    num_attacks = models.IntegerField()
+    num_missed_attacks = models.IntegerField()
+    total_stars = models.IntegerField()
+    total_destruction = models.IntegerField()
+    average_total_stars = models.FloatField()
+    average_total_destruction = models.FloatField(default=0)
+
+    clan_name = models.CharField(default="", max_length=50)
+    clan_tag = models.CharField(max_length=20, default="")
     month_year = models.DateField(default=date.today)
     current_time = models.CharField(max_length=50, default="N/A")
 
