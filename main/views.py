@@ -141,6 +141,7 @@ def clan_search(request):
 
 @login_required(login_url='/')
 def toggle_save_clan(request, clan_tag):
+    clan_tag = unquote(clan_tag)
     saved_clan = SavedClan.objects.filter(user=request.user, clan_tag=clean_tag(clan_tag)).first()
     clan_data = get_all_clan_data(clean_tag(clan_tag))
     member_data = get_member_data(clean_tag(clan_tag))
@@ -170,6 +171,7 @@ def toggle_save_clan(request, clan_tag):
 
 @login_required(login_url='/')
 def toggle_save_player(request, player_tag):
+    player_tag = unquote(player_tag)
     player = get_all_player_data(clean_tag(player_tag))
     saved_player = SavedPlayer.objects.filter(user=request.user, player_tag=clean_tag(player_tag)).first()
     is_being_tracked = GlobalPlayer.objects.filter(player_tag=clean_tag(player_tag)).exists()
@@ -218,6 +220,7 @@ def my_clans(request):
     return render(request, "main/my_clans.html", {'clans': clans_data})
 
 def view_clan(request, clan_tag, mode):
+    clan_tag = unquote(clan_tag)
     is_saved = "not_logged_in"
     change = None
     member_data = get_member_data(clean_tag(clan_tag))
@@ -312,6 +315,7 @@ def view_player(request, player_tag):
 
 
 def view_player_history(request, player_tag):
+    player_tag = unquote(player_tag)
     player = get_all_player_data(clean_tag(player_tag))
     player_history = GlobalPlayer.objects.get(player_tag=clean_tag(player_tag))
     monthly_data = player_history.monthly_data.all()[::-1]
@@ -321,6 +325,7 @@ def view_player_history(request, player_tag):
     return render(request, "main/view_player_history.html", {"player": player, "monthly_data": monthly_data})
 
 def view_clan_general_history(request, clan_tag):
+    clan_tag = unquote(clan_tag)
     clan = get_all_clan_data(clean_tag(clan_tag))
     clan_general_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
     monthly_data_general = clan_general_history.monthly_data_general.all()[::-1]
@@ -344,6 +349,7 @@ def view_clan_general_history(request, clan_tag):
 
 
 def view_clan_war_history(request, clan_tag):
+    clan_tag = unquote(clan_tag)
     clan = get_all_clan_data(clean_tag(clan_tag))
     clan_war_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
     monthly_data_war = clan_war_history.monthly_data_war.all()[::-1]
@@ -396,6 +402,7 @@ def view_clan_war_history(request, clan_tag):
 
 
 def view_CWL_war(request, clan_tag, month):
+    clan_tag = unquote(clan_tag)
     clan_war_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
     CWL_information = clan_war_history.cwl_information.all()[::-1]
     for record in CWL_information:
