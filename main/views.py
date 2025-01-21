@@ -204,12 +204,11 @@ def my_clans(request):
     # Iterate through each saved clan for the logged-in user
     for clan in SavedClan.objects.filter(user=request.user):
         clan_info = find_clan_with_tag(clean_tag(clan.clan_tag), [])
-        clan_badge = get_clan_badge(clean_tag(clan.clan_tag))
+        # clan_badge = get_clan_badge(clean_tag(clan.clan_tag))
         
         # Prepare the data to pass to the template
         clans_data.append({
             "clan_info": clan_info,
-            'badge': clan_badge,
         })
 
     return render(request, "main/my_clans.html", {'clans': clans_data})

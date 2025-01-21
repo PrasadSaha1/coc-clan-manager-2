@@ -13,7 +13,7 @@ My Clans
         {% for clan in clans %}
         <div class="clan-container">
             <div class="clan-details">
-                <img src="{{ clan.badge }}" alt="{{ clan.name }} Badge" class="clan-badge">
+                <img src="{{ clan.clan_info.badgeUrls.medium }}" alt="{{ clan.name }} Badge" class="clan-badge">
                 <p><strong>Clan Name:</strong> {{ clan.clan_info.name }}</p>
                 <p><strong>Clan Tag:</strong> {{ clan.clan_info.tag }}</p>
                 
