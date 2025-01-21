@@ -10,6 +10,7 @@ from .models import SavedClan, SavedPlayer, GlobalPlayer, GlobalClan, ClanCWLInf
 from main.api import *
 from .helpers import determine_email_level
 from register.send_emails import send_verification_email
+from urllib.parse import unquote
 
 def home(request):
     # get_CWL_war_tags(4)
@@ -275,6 +276,7 @@ def my_players(request):
     return render(request, "main/my_players.html", {'players': players_data})
 
 def view_player(request, player_tag):
+    player_tag = unquote(player_tag)
     is_saved = "not_logged_in"
     change = None
     player = get_all_player_data(clean_tag(player_tag))
@@ -367,7 +369,7 @@ def view_clan_war_history(request, clan_tag):
     
     each_war_start_times = []
     month_years = []
-    
+
     try:
         for war in each_war_data:
             each_war_start_times.append(war.war_info["preparationStartTime"])

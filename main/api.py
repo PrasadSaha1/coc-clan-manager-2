@@ -11,6 +11,7 @@ headers = {
 def find_clan_with_tag(clan_tag, information):
     response = requests.get(f"https://cocproxy.royaleapi.dev/v1/clans/%23{clan_tag}", headers=headers)
     response_json = response.json()
+    
 
     information_to_export = []
     for info in information:
