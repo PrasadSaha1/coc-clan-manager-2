@@ -367,10 +367,17 @@ def view_clan_war_history(request, clan_tag):
     
     each_war_start_times = []
     month_years = []
-    for war in each_war_data:
-        each_war_start_times.append(war.war_info["preparationStartTime"])
-    for month in CWL_information:
-        month_years.append(month.month_year)
+    
+    try:
+        for war in each_war_data:
+            each_war_start_times.append(war.war_info["preparationStartTime"])
+    except:
+        pass
+    try:
+        for month in CWL_information:
+            month_years.append(month.month_year)
+    except:
+        pass
 
     return render(request, "main/view_clan_war_history.html", {
         "clan": clan,

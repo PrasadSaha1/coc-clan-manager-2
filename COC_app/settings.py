@@ -12,9 +12,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / "secrets.env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -107,7 +111,6 @@ DATABASES = {
     }
 }
 """
-
 DATABASES = {
     "default":{
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -119,6 +122,18 @@ DATABASES = {
     }
 }
 
+if os.environ.get("VERCEL_ENV") == "production":
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ.get("PRODUCTION_DB_URL"), conn_max_age=600
+        )
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ.get("DEVELOPMENT_DB_URL"), conn_max_age=600
+        )
+    }   
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
