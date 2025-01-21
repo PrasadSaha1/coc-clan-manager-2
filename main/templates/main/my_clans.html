@@ -14,24 +14,24 @@ My Clans
         <div class="clan-container">
             <div class="clan-details">
                 <img src="{{ clan.badge }}" alt="{{ clan.name }} Badge" class="clan-badge">
-                <p><strong>Clan Name:</strong> {{ clan.name }}</p>
-                <p><strong>Clan Tag:</strong> {{ clan.tag }}</p>
+                <p><strong>Clan Name:</strong> {{ clan.clan_info.name }}</p>
+                <p><strong>Clan Tag:</strong> {{ clan.clan_info.tag }}</p>
                 
-                <p><strong>Clan Type:</strong> {% clan_type_display clan.type %}</p>
+                <p><strong>Clan Type:</strong> {% clan_type_display clan.clan_info.type %}</p>
                 
-                <p><strong>Description:</strong> {{ clan.description }}</p>
-                <p><strong>Members:</strong> {{ clan.members }}</p>
-                <p><strong>Clan Points:</strong> {{ clan.clan_points }}</p>
+                <p><strong>Description:</strong> {{ clan.clan_info.description }}</p>
+                <p><strong>Members:</strong> {{ clan.clan_info.members }}</p>
+                <p><strong>Clan Points:</strong> {{ clan.clan_info.clanPoints }}</p>
                 
-                <form method="post" action="{% url 'view_clan' clan.tag 'general' %}" class="button-form">
+                <form method="post" action="{% url 'view_clan' clan.clan_info.tag 'general' %}" class="button-form">
                     {% csrf_token %}
-                    <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                    <input type="hidden" name="clan_tag" value="{{ clan.clan_info.tag }}">
                     <button type="submit" name="view_clan" class="view-button">View Clan</button>
                 </form>
 
-                <form method="post" action="{% url 'toggle_save_clan' clan.tag %}" class="button-form">
+                <form method="post" action="{% url 'toggle_save_clan' clan.clan_info.tag %}" class="button-form">
                     {% csrf_token %}
-                    <input type="hidden" name="clan_tag" value="{{ clan.tag }}">
+                    <input type="hidden" name="clan_tag" value="{{ clan.clan_info.tag }}">
                     <button type="submit" name="save_clan" class="remove-button">Remove Clan</button>
                 </form>
             </div>
