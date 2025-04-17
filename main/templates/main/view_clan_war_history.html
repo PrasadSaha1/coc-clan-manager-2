@@ -14,7 +14,7 @@ Clan War History for {{clan.name}}
     </form>
     <h1 class="centered-heading">War History for {{ clan.name }}</h1>
 
-    {% if each_war_data == "N/A" %}
+    {% if each_war_data == "N/A" and CWL_information == "N/A" %}
         <h3 class="center-text">There is no history available for this clan. Ensure that the war log is public and check back after the next war.</h3>
     {% else %}
     <div class="clan-grid">
@@ -54,97 +54,103 @@ Clan War History for {{clan.name}}
         </div>        
         {% if type_of_war == "regular" %}
             {% if type_of_data == "in-depth" %}
-                {% for record in each_war_data %}
-                    <div class="war-section" 
-                        style="
+                {% if each_war_data != "N/A" %}
+                    {% for record in each_war_data %}
+                        <div class="war-section" 
+                            style="
+                                {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
+                                    background-color: #28a745;  /* Green for Win */
+                                {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
+                                    background-color: #dc3545;  /* Red for Loss */
+                                {% elif record.war_info.clan.stars == record.war_info.opponent.stars %}
+                                    {% if record.war_info.clan.destructionPercentage > record.war_info.opponent.destructionPercentage %}
+                                        background-color: #28a745;  /* Green for Win */
+                                    {% elif record.war_info.clan.destructionPercentage < record.war_info.opponent.destructionPercentage %}
+                                        background-color: #dc3545;  /* Red for Loss */
+                                    {% else %}
+                                        background-color: #f8f9fa;  /* Default color for Draw */
+                                    {% endif %}
+                                {% endif %}
+                            ">
+
+                            <h2>Preparation Day started at {{ record.war_info.preparationStartTime|convert_to_est }}</h2>
                             {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
-                                background-color: #28a745;  /* Green for Win */
+                                <h1 class="result-heading">Win</h1>
                             {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
-                                background-color: #dc3545;  /* Red for Loss */
+                                <h1 class="result-heading">Loss</h1>
                             {% elif record.war_info.clan.stars == record.war_info.opponent.stars %}
                                 {% if record.war_info.clan.destructionPercentage > record.war_info.opponent.destructionPercentage %}
-                                    background-color: #28a745;  /* Green for Win */
+                                    <h1 class="result-heading">Win</h1>
                                 {% elif record.war_info.clan.destructionPercentage < record.war_info.opponent.destructionPercentage %}
-                                    background-color: #dc3545;  /* Red for Loss */
+                                    <h1 class="result-heading">Loss</h1>
                                 {% else %}
-                                    background-color: #f8f9fa;  /* Default color for Draw */
+                                    <h1 class="result-heading">Draw</h1>
                                 {% endif %}
                             {% endif %}
-                        ">
-
-                        <h2>Preparation Day started at {{ record.war_info.preparationStartTime|convert_to_est }}</h2>
-                        {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
-                            <h1 class="result-heading">Win</h1>
-                        {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
-                            <h1 class="result-heading">Loss</h1>
-                        {% elif record.war_info.clan.stars == record.war_info.opponent.stars %}
-                            {% if record.war_info.clan.destructionPercentage > record.war_info.opponent.destructionPercentage %}
-                                <h1 class="result-heading">Win</h1>
-                            {% elif record.war_info.clan.destructionPercentage < record.war_info.opponent.destructionPercentage %}
-                                <h1 class="result-heading">Loss</h1>
+                            {% if record.point_fetched == "+4" %}
+                                <h3>Information was fetched after the war ended and should be completly accurate.</h3>
                             {% else %}
-                                <h1 class="result-heading">Draw</h1>
+                                <h3>Information was fetched before the war ended (-15 seconds) and may be inaccurate if players attacked near the end.</h3>
                             {% endif %}
-                        {% endif %}
-                        {% if record.point_fetched == "+4" %}
-                            <h3>Information was fetched after the war ended and should be completly accurate.</h3>
-                        {% else %}
-                            <h3>Information was fetched before the war ended (-15 seconds) and may be inaccurate if players attacked near the end.</h3>
-                        {% endif %}
 
-                        <div class="clan-container">
-                            <div class="clan-info left">
-                                <img src="{{ record.war_info.clan.badgeUrls.medium }}" alt="{{ record.war_info.clan.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
-                                <h1>{{ record.war_info.clan.name }}</h1>
-                                <h4><strong>Tag:</strong> {{ record.war_info.clan.tag }}</h4>
-                                <h4><strong>Attacks:</strong> {{ record.war_info.clan.attacks }}</h4>
-                                <h4><strong>Stars:</strong> {{ record.war_info.clan.stars }}</h4>
-                                <h4><strong>Total Destruction:</strong> {{ record.war_info.clan.destructionPercentage|floatformat:2 }}%</h4>
-                            </div>
-                        
-                            <div class="clan-info right">
-                                <img src="{{ record.war_info.opponent.badgeUrls.medium }}" alt="{{ record.war_info.opponent.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
-                                <h1>{{ record.war_info.opponent.name }}</h1>
-                                <h4><strong>Tag:</strong> {{ record.war_info.opponent.tag }}</h4>
-                                <h4><strong>Attacks:</strong> {{ record.war_info.opponent.attacks }}</h4>
-                                <h4><strong>Stars:</strong> {{ record.war_info.opponent.stars }}</h4>
-                                <h4><strong>Total Destruction:</strong> {{ record.war_info.opponent.destructionPercentage|floatformat:2 }}%</h4>
-                            </div>
+                            <div class="clan-container">
+                                <div class="clan-info left">
+                                    <img src="{{ record.war_info.clan.badgeUrls.medium }}" alt="{{ record.war_info.clan.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+                                    <h1>{{ record.war_info.clan.name }}</h1>
+                                    <h4><strong>Tag:</strong> {{ record.war_info.clan.tag }}</h4>
+                                    <h4><strong>Attacks:</strong> {{ record.war_info.clan.attacks }}</h4>
+                                    <h4><strong>Stars:</strong> {{ record.war_info.clan.stars }}</h4>
+                                    <h4><strong>Total Destruction:</strong> {{ record.war_info.clan.destructionPercentage|floatformat:2 }}%</h4>
+                                </div>
+                            
+                                <div class="clan-info right">
+                                    <img src="{{ record.war_info.opponent.badgeUrls.medium }}" alt="{{ record.war_info.opponent.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
+                                    <h1>{{ record.war_info.opponent.name }}</h1>
+                                    <h4><strong>Tag:</strong> {{ record.war_info.opponent.tag }}</h4>
+                                    <h4><strong>Attacks:</strong> {{ record.war_info.opponent.attacks }}</h4>
+                                    <h4><strong>Stars:</strong> {{ record.war_info.opponent.stars }}</h4>
+                                    <h4><strong>Total Destruction:</strong> {{ record.war_info.opponent.destructionPercentage|floatformat:2 }}%</h4>
+                                </div>
 
+                            </div>
+                            {% if include_member_data == "yes" %}
+                                <h1 class="result-heading">Member Data</h1>
+                                <table id="sortableTable_{{record.war_info.preparationStartTime}}" class="sortable-table">
+                                    <thead>
+                                        <tr>
+                                            <th onclick="sortTable('string', 0, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Name <span class="sort-arrow-"></span></th>
+                                            <th onclick="sortTable('string', 1, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Tag <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 2, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Roster Number <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 3, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Number of Attacks <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 4, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 1 Stars <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 5, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 1 Destruction <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 6, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 2 Stars <span class="sort-arrow"></span></th>
+                                            <th onclick="sortTable('int', 7, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 2 Destruction <span class="sort-arrow"></span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for member in record.war_info.clan.members %}
+                                        <tr>
+                                            <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                                            <td>{{member.tag}}</td>
+                                            <td>{{member.mapPosition}}</td>
+                                            <td>{{member.attacks|length}}</td>
+                                            <td>{{ member.attacks.0.stars|default:0 }}</td>
+                                            <td>{{ member.attacks.0.destructionPercentage|default:0 }}</td>
+                                            <td>{{ member.attacks.1.stars|default:0 }}</td>
+                                            <td>{{ member.attacks.1.destructionPercentage|default:0 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
                         </div>
-                        {% if include_member_data == "yes" %}
-                            <h1 class="result-heading">Member Data</h1>
-                            <table id="sortableTable_{{record.war_info.preparationStartTime}}" class="sortable-table">
-                                <thead>
-                                    <tr>
-                                        <th onclick="sortTable('string', 0, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Name <span class="sort-arrow-"></span></th>
-                                        <th onclick="sortTable('string', 1, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Tag <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 2, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Roster Number <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 3, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Number of Attacks <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 4, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 1 Stars <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 5, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 1 Destruction <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 6, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 2 Stars <span class="sort-arrow"></span></th>
-                                        <th onclick="sortTable('int', 7, 'sortableTable_{{ record.war_info.preparationStartTime }}', 'asc')">Attack 2 Destruction <span class="sort-arrow"></span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for member in record.war_info.clan.members %}
-                                    <tr>
-                                        <td><a href="{% url 'view_player' member.tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
-                                        <td>{{member.tag}}</td>
-                                        <td>{{member.mapPosition}}</td>
-                                        <td>{{member.attacks|length}}</td>
-                                        <td>{{ member.attacks.0.stars|default:0 }}</td>
-                                        <td>{{ member.attacks.0.destructionPercentage|default:0 }}</td>
-                                        <td>{{ member.attacks.1.stars|default:0 }}</td>
-                                        <td>{{ member.attacks.1.destructionPercentage|default:0 }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                    {% empty %}
+                        <h3 class="center-text">No data is available, please try other filters</h3>
+                    {% endfor %}
+                {% else %}
+                    <h3 class="center-text">No data is available, please try other filters</h3>
+                {% endif %}
             {% else %}
                 {% for record in monthly_data_war %}
                     <div class="war-section" style="background-color: white;">
@@ -189,75 +195,83 @@ Clan War History for {{clan.name}}
                         </table>
                         {% endif %}
                     </div>
+                {% empty %}
+                    <h3 class="center-text">No data is available, please try other filters</h3>
                 {% endfor %}
             {% endif %}
         {% else %}
-            {% for record in CWL_information %}
-                <div class="war-section" style="background-color: white;">
-                    <h2>{{record.month_year|month_year_format}}</h2>
-                    <h2>{{record.league}}</h2>
-                    <h2>{{record.placement|place_format}} place</h2>
-                    <table id="sortableTable_overview_{{record.month_year}}" class="sortable-table">
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('int', 0, 'sortableTable_overview_{{record.month_year}}', 'asc')">Placement <span class="sort-arrow"></span></th>
-                                <th onclick="sortTable('string', 1, 'sortableTable_overview_{{record.month_year}}', 'asc')">Clan Name <span class="sort-arrow"></span></th>
-                                <th onclick="sortTable('string', 2, 'sortableTable_overview_{{record.month_year}}', 'asc')">Clan Tag<span class="sort-arrow"></span></th>
-                                <th onclick="sortTable('int', 3, 'sortableTable_overview_{{record.month_year}}', 'asc')">Stars <span class="sort-arrow"></span></th>
-                                <th onclick="sortTable('int', 4, 'sortableTable_overview_{{record.month_year}}', 'asc')">Total Destruction<span class="sort-arrow"></span></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {% for clan in record.all_clan_placement %}
-                            <tr>
-                                <td>{{clan.placement}}</td>
-                                <td><a href="{% url 'view_clan' clan.tag 'general' %}" style="color: inherit; text-decoration: none;">{{ clan.name }}</a></td>
-                                <td>#{{clan.tag}}</td>
-                                <td>{{clan.stars}}</td>
-                                <td>{{clan.percent}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    
-                    <div style="display: flex; justify-content: center; align-items: center; height: 10vh;">
-                        <form method="post" action="{% url 'view_CWL_war' clan.tag record.month_year %}" class="button-form">
-                            {% csrf_token %}
-                            <button type="submit" name="back" class="view-button">View Each War</button>
-                        </form>
-                    </div>
-
-                    {% if include_member_data == "yes" %}
-                        <h1 class="result-heading">Member Data</h1>
-                        <table id="sortableTable_members_{{record.month_year}}" class="sortable-table">
+            {% if CWL_information != "N/A" %}
+                {% for record in CWL_information %}
+                    <div class="war-section" style="background-color: white;">
+                        <h2>{{record.month_year|month_year_format}}</h2>
+                        <h2>{{record.league}}</h2>
+                        <h2>{{record.placement|place_format}} place</h2>
+                        <table id="sortableTable_overview_{{record.month_year}}" class="sortable-table">
                             <thead>
                                 <tr>
-                                    <th onclick="sortTable('int', 0, 'sortableTable_members_{{record.month_year}}', 'asc')">Rank <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('string', 1, 'sortableTable_members_{{record.month_year}}', 'asc')">Name <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('string', 2, 'sortableTable_members_{{record.month_year}}', 'asc')">Tag <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 3, 'sortableTable_members_{{record.month_year}}', 'asc')">Number of Attacks <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 4, 'sortableTable_members_{{record.month_year}}', 'asc')">Number of Missed Attacks <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 5, 'sortableTable_members_{{record.month_year}}', 'asc')">Stars <span class="sort-arrow"></span></th>
-                                    <th onclick="sortTable('int', 6, 'sortableTable_members_{{record.month_year}}', 'asc')">Total Destruction<span class="sort-arrow"></span></th>
-                                </tr>
+                                    <th onclick="sortTable('int', 0, 'sortableTable_overview_{{record.month_year}}', 'asc')">Placement <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('string', 1, 'sortableTable_overview_{{record.month_year}}', 'asc')">Clan Name <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('string', 2, 'sortableTable_overview_{{record.month_year}}', 'asc')">Clan Tag<span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 3, 'sortableTable_overview_{{record.month_year}}', 'asc')">Stars <span class="sort-arrow"></span></th>
+                                    <th onclick="sortTable('int', 4, 'sortableTable_overview_{{record.month_year}}', 'asc')">Total Destruction<span class="sort-arrow"></span></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {% for tag, member in record.member_data.items %}
+                                {% for clan in record.all_clan_placement %}
                                 <tr>
-                                    <td>{{forloop.counter}}</td>
-                                    <td><a href="{% url 'view_player' tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
-                                    <td>{{tag}}</td>
-                                    <td>{{member.attacks}}</td>
-                                    <td>{{member.warsIn}}</td>
-                                    <td>{{member.stars}}</td>
-                                    <td>{{member.percent}}</td>
+                                    <td>{{clan.placement}}</td>
+                                    <td><a href="{% url 'view_clan' clan.tag 'general' %}" style="color: inherit; text-decoration: none;">{{ clan.name }}</a></td>
+                                    <td>#{{clan.tag}}</td>
+                                    <td>{{clan.stars}}</td>
+                                    <td>{{clan.percent}}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                        
+                        <div style="display: flex; justify-content: center; align-items: center; height: 10vh;">
+                            <form method="post" action="{% url 'view_CWL_war' clan.tag record.month_year %}" class="button-form">
+                                {% csrf_token %}
+                                <button type="submit" name="back" class="view-button">View Each War</button>
+                            </form>
+                        </div>
+
+                        {% if include_member_data == "yes" %}
+                            <h1 class="result-heading">Member Data</h1>
+                            <table id="sortableTable_members_{{record.month_year}}" class="sortable-table">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortTable('int', 0, 'sortableTable_members_{{record.month_year}}', 'asc')">Rank <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('string', 1, 'sortableTable_members_{{record.month_year}}', 'asc')">Name <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('string', 2, 'sortableTable_members_{{record.month_year}}', 'asc')">Tag <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('int', 3, 'sortableTable_members_{{record.month_year}}', 'asc')">Number of Attacks <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('int', 4, 'sortableTable_members_{{record.month_year}}', 'asc')">Number of Missed Attacks <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('int', 5, 'sortableTable_members_{{record.month_year}}', 'asc')">Stars <span class="sort-arrow"></span></th>
+                                        <th onclick="sortTable('int', 6, 'sortableTable_members_{{record.month_year}}', 'asc')">Total Destruction<span class="sort-arrow"></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tag, member in record.member_data.items %}
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td><a href="{% url 'view_player' tag %}" style="color: inherit; text-decoration: none;">{{ member.name }}</a></td>
+                                        <td>{{tag}}</td>
+                                        <td>{{member.attacks}}</td>
+                                        <td>{{member.warsIn}}</td>
+                                        <td>{{member.stars}}</td>
+                                        <td>{{member.percent}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <h3 class="center-text">No data is available, please try other filters</h3>
+                {% endfor %}
+            {% else %}
+                <h3 class="center-text">No data is available, please try other filters</h3>
+            {% endif %}
         {% endif %}
     </div>
     {% endif %}

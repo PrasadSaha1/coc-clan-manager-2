@@ -7,6 +7,7 @@ import time
 import pytz
 from django.db import transaction
 from datetime import datetime
+from django.contrib.auth import get_user_model
 
 # UPS = update_player_history
 timezone = pytz.timezone('America/New_York')  # Replace with your desired time zone
@@ -54,6 +55,7 @@ def fetch_war_info(clan_tag, time):
     clan, created = GlobalClan.objects.get_or_create(clan_tag=clan_tag)
     current_time = str(datetime.now().strftime("%H-%M-%S"))
     ClanWarInformation.objects.create(clan=clan, war_info=war_info, current_time=current_time, point_fetched=point_fetched)
+    print(war_info)
 
     date_started = war_info["preparationStartTime"]
     converted_date = datetime.strptime(date_started, '%Y%m%dT%H%M%S.000Z').date()
@@ -143,7 +145,7 @@ def fetch_war_info(clan_tag, time):
             
             if clan_stars > opponent_stars or clan_stars == opponent_stars and clan_destruction > opponent_destruction:
                 num_wins += 1
-            elif clan.stars < opponent_stars or clan_stars == opponent_stars and clan_destruction < opponent_destruction:
+            elif clan_stars < opponent_stars or clan_stars == opponent_stars and clan_destruction < opponent_destruction:
                 num_losses += 1
             else:
                 num_draws += 1
@@ -450,6 +452,7 @@ def end_of_trophy_season_updates():
 
 @shared_task
 def get_CWL_war_tags(day):
+    """Run on the 4th through 10th day of each month"""
     if day == 4:
         clans = GlobalClan.objects.all()
         for clan in clans:
@@ -495,6 +498,7 @@ class WarInfo:
 
 @shared_task
 def process_CWL_information():
+    """Run on the 12th of each month"""
     all_info = CWLGroupData.objects.all()
     time1 = time.perf_counter()
 
@@ -572,3 +576,16 @@ def process_CWL_information():
     
         
     print(time.perf_counter() - time1)
+
+@shared_task
+def delete_all_CWL_group_info():
+    """Runs on the 20th of each month"""
+    CWLGroupData.objects.all().delete()
+
+@shared_task
+def test_task():
+    User = get_user_model()  # Get the user model
+    user = User.objects.get(username="Ranntern")  # Find user by username
+    user.username = "NewNewNewNameNameName"  # Update username
+    user.save()  
+

@@ -74,7 +74,7 @@ def equipment_to_hero(equipment):
         return "Grand Warden"
     elif equipment in ["Royal Gem", "Seeking Shield", "Hog Rider Puppet", "Haste Vial", "Rocket Spear", "Electro Boots"]:
         return "Royal Champion"
-    return "New equipment - not yet configured"
+    return "Barbarian King"
 
 @register.filter
 def check_in_use_1(equipment, player):
@@ -299,10 +299,11 @@ def format_email(email, email_level):
 @register.filter
 def fetch_player_name(tag):
     # Clean the tag and find the corresponding player
-    data = GlobalPlayer.objects.get(player_tag=clean_tag(str(tag)))
+    # data = GlobalPlayer.objects.get_or_create(player_tag=clean_tag(str(tag)))
 
     # Retrieve the latest monthly data for the player
-    monthly_data = PlayerMonthlyData.objects.filter(player=data).last()
+   #  monthly_data = PlayerMonthlyData.objects.filter(player=data).last()
+    return None
     return monthly_data.data["name"]
 
 # Custom filter for formatting month_year (e.g., "01-2025" to "January 2025")

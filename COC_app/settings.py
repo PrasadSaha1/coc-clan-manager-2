@@ -111,6 +111,20 @@ DATABASES = {
     }
 }
 """
+
+DATABASES = {
+    "default":{
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "railway",
+        "USER": "postgres",
+        "PASSWORD": "PudyyWWKxWVnhxkZmqRuueHExRBOTiMN",
+        "HOST": "crossover.proxy.rlwy.net",
+        "PORT": "12533",
+    }
+}
+
+
+"""
 DATABASES = {
     "default":{
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -121,7 +135,9 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+"""
 
+"""
 if os.environ.get("VERCEL_ENV") == "production":
     DATABASES = {
         "default": dj_database_url.config(
@@ -134,6 +150,7 @@ else:
             default=os.environ.get("DEVELOPMENT_DB_URL"), conn_max_age=600
         )
     }   
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

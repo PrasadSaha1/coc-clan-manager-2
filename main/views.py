@@ -353,6 +353,8 @@ def view_clan_war_history(request, clan_tag):
     CWL_information = clan_war_history.cwl_information.all()[::-1]
     if len(each_war_data) == 0:
         each_war_data = "N/A"
+    if len(CWL_information) == 0:
+        CWL_information = "N/A"
     
     # Get the submitted values or use defaults
     type_of_war = request.POST.get('type_of_war', 'regular')  # Default value if none selected
@@ -380,6 +382,7 @@ def view_clan_war_history(request, clan_tag):
             month_years.append(month.month_year)
     except:
         pass
+
 
     return render(request, "main/view_clan_war_history.html", {
         "clan": clan,
