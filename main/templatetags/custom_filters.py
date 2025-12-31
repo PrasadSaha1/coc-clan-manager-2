@@ -1,7 +1,7 @@
 from django import template
 import pytz
 from datetime import datetime, date
-from main.api import clean_tag
+from main.api import clean_tag, get_all_player_data
 from main.models import PlayerMonthlyData, GlobalPlayer
 
 register = template.Library()
@@ -302,9 +302,35 @@ def fetch_player_name(tag):
     # data = GlobalPlayer.objects.get_or_create(player_tag=clean_tag(str(tag)))
 
     # Retrieve the latest monthly data for the player
-   #  monthly_data = PlayerMonthlyData.objects.filter(player=data).last()
-    return None
-    return monthly_data.data["name"]
+    # monthly_data = PlayerMonthlyData.objects.filter(player=data).last()
+    players = {
+        "YR928CVPR": "chinaboi",
+        "GP2QVR88L": "Man Bear Pig",
+        "P2GLQVQ9": "andrew",
+        "20LJQ9YJ": "JRayy11",
+        "PRCUULRYL": "Great Dahiya",
+        "YCLCV9890": "Josee",
+        "L29P9PU2V": "Hamodysnap1w",
+        "QLQVJY22": "babyseal",
+        "L8CYLLRCR": "Fungames542",
+        "Y0ULQJ0PG": "Anarchist",
+        "22L2V0JUY": "Jesundo",
+        "8UYPLP09": "ReissCooker",
+        "LQJ2LCYY8": "Hugotic",
+        "LLQP80JYV": "wasachi",
+        "LLC2P8QQL": "Quann",
+        "Y9JGY9CGG": "lamby",
+        "LC2J8UJ90": "fungames542#3",
+        "29PGPJYG": "Keef",
+        "YR0VCL2Y": "Sir Charles",
+        "LLVJU9G8G": "ShaneHelper",
+        "G2RCQU9P": "JB",
+        "PLUG8C09P": "Snickers20",
+        "LR8LU8J8C": "Shelly.M.V❤",
+        "9PY2VJYLG": "District007"
+    }
+
+    return players.get(clean_tag(str(tag)), None)
 
 # Custom filter for formatting month_year (e.g., "01-2025" to "January 2025")
 @register.filter

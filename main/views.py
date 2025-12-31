@@ -334,8 +334,11 @@ def view_clan_general_history(request, clan_tag):
     for member in members:
         player_tag = clean_tag(member["tag"])
         player, created = GlobalPlayer.objects.get_or_create(player_tag=player_tag)
+        i = 0
         for month in player.monthly_data.all():
-            summary_member_data.append(month)
+            if i == 4:
+                summary_member_data.append(month)
+            i += 1
 
     return render(request, "main/view_clan_general_history.html", 
                   {"clan": clan, "monthly_data_general": monthly_data_general, "summary_member_data": summary_member_data,
@@ -348,6 +351,9 @@ def view_clan_war_history(request, clan_tag):
     clan_war_history = GlobalClan.objects.get(clan_tag=clean_tag(clan_tag))
     monthly_data_war = clan_war_history.monthly_data_war.all()[::-1]
     each_war_data = clan_war_history.war_information.all()[::-1]
+
+    # monthly_data_war[0].month_year
+
 
 
     CWL_information = clan_war_history.cwl_information.all()[::-1]
@@ -363,11 +369,21 @@ def view_clan_war_history(request, clan_tag):
 
     summary_member_data = []
     members = clan["memberList"]
+    tags = []
+
     for member in members:
         player_tag = clean_tag(member["tag"])
         player, created = GlobalPlayer.objects.get_or_create(player_tag=player_tag)
+        i = 0
         for month in player.monthly_data_war.all():
-            summary_member_data.append(month)
+            if i == 4:
+                month.num_missed_attacks = month.num_wars * 2 - month.num_attacks 
+                summary_member_data.append(month)
+            i += 1
+
+    # print(summary_member_data[0])
+
+
     
     each_war_start_times = []
     month_years = []

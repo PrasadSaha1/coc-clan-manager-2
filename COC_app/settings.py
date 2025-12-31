@@ -112,6 +112,8 @@ DATABASES = {
 }
 """
 
+
+"""
 DATABASES = {
     "default":{
         "ENGINE": "django.db.backends.postgresql",
@@ -122,9 +124,10 @@ DATABASES = {
         "PORT": "12533",
     }
 }
-
-
 """
+
+
+
 DATABASES = {
     "default":{
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -135,7 +138,7 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-"""
+
 
 """
 if os.environ.get("VERCEL_ENV") == "production":

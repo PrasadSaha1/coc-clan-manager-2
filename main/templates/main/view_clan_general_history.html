@@ -44,8 +44,9 @@ Clan General History for {{clan.name}}
 
         {% for record in monthly_data_general %}
             <div class="war-section" style="background-color: white;">
-                <h2>{{record.month_year|date:"F Y"}}</h2>
-                <h3 class="center-text">Fetched on {{record.day_fetched}} at {{record.time_fetched}} EST</h3> 
+                <h2>December 2025</h2>
+               <!--  <h2>{{record.month_year|date:"F Y"}}</h2>
+                <h3 class="center-text">Fetched on {{record.day_fetched}} at {{record.time_fetched}} EST</h3> -->
                 <img src="{{ record.data.badgeUrls.medium }}" alt="{{ record.data.name }} Badge" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin: 0 auto;">
                 <h5><strong>Description: </strong>{{record.data.description}}</h5>
                 <div class="clan-container">

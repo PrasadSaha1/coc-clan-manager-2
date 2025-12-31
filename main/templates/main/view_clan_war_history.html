@@ -32,21 +32,18 @@ Clan War History for {{clan.name}}
                     <label><input type="radio" name="type_of_war" value="cwl" {% if type_of_war == "cwl" %}checked{% endif %}> CWL Only</label>
                 </div>
         
-                <!-- Type of Data -->
                 <div class="war-options">
                     <h4>Type of Data</h4>
                     <label><input type="radio" name="type_of_data" value="summary" {% if type_of_data == "summary" %}checked{% endif %}> Summary</label>
                     <label><input type="radio" name="type_of_data" value="in-depth" {% if type_of_data == "in-depth" %}checked{% endif %}> In-depth</label>
                 </div>
         
-                <!-- Include Member Data -->
                 <div class="war-options">
                     <h4>Include Member Data</h4>
                     <label><input type="radio" name="include_member_data" value="yes" {% if include_member_data == "yes" %}checked{% endif %}> Yes</label>
                     <label><input type="radio" name="include_member_data" value="no" {% if include_member_data == "no" %}checked{% endif %}> No</label>
                 </div>
         
-                <!-- Submit Button -->
                 <div style="display: flex; justify-content: center; margin-top: 20px;">
                     <button type="submit" name="war_options" class="view-button">Submit</button>
                 </div>
@@ -73,7 +70,7 @@ Clan War History for {{clan.name}}
                                 {% endif %}
                             ">
 
-                            <h2>Preparation Day started at {{ record.war_info.preparationStartTime|convert_to_est }}</h2>
+                            <h2>Preparation Day started at on December 27th, 2025 </h2>
                             {% if record.war_info.clan.stars > record.war_info.opponent.stars %}
                                 <h1 class="result-heading">Win</h1>
                             {% elif record.war_info.clan.stars < record.war_info.opponent.stars %}
@@ -155,7 +152,8 @@ Clan War History for {{clan.name}}
                 {% for record in monthly_data_war %}
                     <div class="war-section" style="background-color: white;">
                         <div>
-                        <h2>{{ record.month_year|date:"F Y" }}</h2>
+                        <h2>December 2025</h2>
+                        <!-- <h2>{{ record.month_year|date:"F Y" }}</h2> -->
                         <p><strong>Number of Wars:</strong> {{ record.num_wars|floatformat:0 }}</p>
                         <p><strong>Win rate:</strong> {{ record.win_rate|mul:100|floatformat:2 }}% ({{record.num_wins}} wins, {{record.num_losses}} losses, {{record.num_draws}} draws)</p>
                         <p><strong>Percent of Attacks Completed:</strong> {{ record.percent_attacks_completed|mul:100|floatformat:2 }}%</p>

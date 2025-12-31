@@ -55,7 +55,7 @@ def fetch_war_info(clan_tag, time):
     clan, created = GlobalClan.objects.get_or_create(clan_tag=clan_tag)
     current_time = str(datetime.now().strftime("%H-%M-%S"))
     ClanWarInformation.objects.create(clan=clan, war_info=war_info, current_time=current_time, point_fetched=point_fetched)
-    print(war_info)
+    # print(war_info)
 
     date_started = war_info["preparationStartTime"]
     converted_date = datetime.strptime(date_started, '%Y%m%dT%H%M%S.000Z').date()
@@ -386,7 +386,7 @@ def get_monthly_clan_general_info():
         else:
             month_year = day_fetched.replace(day=1)
         time_fetched = datetime.now().time()
-        print(clan)
+        # print(clan)
         ClanMonthlyDataGeneral.objects.create(clan=clan, data=data, day_fetched=day_fetched, month_year=month_year, time_fetched=time_fetched)
 
 @shared_task
@@ -575,7 +575,6 @@ def process_CWL_information():
             ClanCWLInformation.objects.create(clan=clan, stars=stars, percent=percent, placement=int(placement), all_clan_placement=general_info, each_war_data=war_info.wars, member_data=war_info.member_data, month_year=data.month_year, league=data.league)
     
         
-    print(time.perf_counter() - time1)
 
 @shared_task
 def delete_all_CWL_group_info():
